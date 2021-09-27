@@ -1,0 +1,43 @@
+plugins {
+  id 'com.android.library'
+  id 'kotlin-android'
+}
+
+android {
+  compileSdk 30
+
+  defaultConfig {
+    minSdk 21
+    targetSdk 30
+    versionCode 1
+    versionName "1.0"
+
+    consumerProguardFiles "consumer-rules.pro"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = '1.8'
+  }
+}
+
+dependencies {
+  implementation 'androidx.core:core-ktx:1.5.0'
+
+  implementation 'com.google.code.gson:gson:2.8.6'
+
+  implementation files('libs/open_ad_sdk_4.0.0.6.aar')
+  implementation files('libs/Baidu_MobAds_SDK-release_v9.16.aar')
+  implementation files('libs/GDTSDK.unionNormal.4.410.1280.aar')
+}
