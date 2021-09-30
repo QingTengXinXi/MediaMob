@@ -24,7 +24,7 @@ class MobConfig(
 ) {
 
     fun checkParamsValidity(): Boolean {
-        return platformConfig.isNotEmpty() && positionConfig.isNotEmpty()
+        return platformConfig.isNotEmpty()
     }
 
     override fun toString(): String {

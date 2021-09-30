@@ -22,6 +22,11 @@ object MobDatabaseHelper {
             }
         }
 
-        return Gson().fromJson(DataHelper.defaultMobConfig, MobConfig::class.java)
+        return try {
+            Gson().fromJson(DataHelper.defaultMobConfig, MobConfig::class.java)
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            null
+        }
     }
 }
