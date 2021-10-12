@@ -1,6 +1,8 @@
 package com.media.mob.platform
 
 import com.media.mob.bean.InitialParams
+import com.media.mob.bean.request.MediaRequestParams
+import com.media.mob.media.view.IMobView
 
 interface IPlatform {
     companion object {
@@ -18,4 +20,9 @@ interface IPlatform {
      * 初始化方法
      */
     fun initial(initialParams: InitialParams)
+
+    /**
+     * 请求开屏广告
+     */
+    fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>)
 }

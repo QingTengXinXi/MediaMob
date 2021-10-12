@@ -7,11 +7,27 @@ object MobLogger {
     private var defaultPrefix = "MediaMob"
 
     fun e(
+        message: String
+    ) {
+        if (Constants.debug) {
+            Log.e(defaultPrefix, message)
+        }
+    }
+
+    fun e(
         tag: String,
         message: String
     ) {
         if (Constants.debug) {
             Log.e("$defaultPrefix-$tag", message)
+        }
+    }
+
+    fun w(
+        message: String
+    ) {
+        if (Constants.debug) {
+            Log.w(defaultPrefix, message)
         }
     }
 
@@ -25,6 +41,14 @@ object MobLogger {
     }
 
     fun i(
+        message: String
+    ) {
+        if (Constants.debug) {
+            Log.i(defaultPrefix, message)
+        }
+    }
+
+    fun i(
         tag: String,
         message: String
     ) {
@@ -34,11 +58,27 @@ object MobLogger {
     }
 
     fun d(
+        message: String
+    ) {
+        if (Constants.debug) {
+            Log.d(defaultPrefix, message)
+        }
+    }
+
+    fun d(
         tag: String,
         message: String
     ) {
         if (Constants.debug) {
             Log.d("$defaultPrefix-$tag", message)
+        }
+    }
+
+    fun v(
+        message: String
+    ) {
+        if (Constants.debug) {
+            Log.v(defaultPrefix, message)
         }
     }
 
