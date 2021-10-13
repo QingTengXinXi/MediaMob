@@ -29,4 +29,7 @@ class SlotTactics(
     var thirdPlatformName: String,
 ):Serializable {
 
+    override fun toString(): String {
+        return "SlotTactics(tacticsWeight=$tacticsWeight, thirdAppId='$thirdAppId', thirdSlotId='$thirdSlotId', thirdPlatformName='$thirdPlatformName')"
+    }
 }

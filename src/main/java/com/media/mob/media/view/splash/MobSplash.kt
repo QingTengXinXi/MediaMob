@@ -1,5 +1,6 @@
 package com.media.mob.media.view.splash
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.ViewGroup
 import com.media.mob.bean.PositionConfig
@@ -10,6 +11,7 @@ import com.media.mob.dispatch.loader.SplashLoader
 import com.media.mob.media.view.IMobView
 import com.media.mob.platform.IPlatform
 
+@SuppressLint("ViewConstructor")
 class MobSplash(val activity: Activity, private val positionConfig: PositionConfig): IMobView(activity) {
 
     /**
@@ -48,9 +50,7 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
         mobView = null
     }
 
-    fun requestSplash() {
-        val slotParams = SlotParams()
-
+    fun requestSplash(slotParams: SlotParams) {
         val splashLoader = SplashLoader(activity, positionConfig, MediaRequestLog(positionConfig), object : MobRequestResult<IMobView> {
 
             override fun requestFailed(code: Int, message: String) {

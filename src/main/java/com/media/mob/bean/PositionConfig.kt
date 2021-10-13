@@ -16,19 +16,11 @@ class PositionConfig(
      */
     @SerializedName("position_name")
     var positionName: String,
-
     /**
-     * 广告位缓存数量配置
-     */
-    @SerializedName("position_cache_count")
-    val positionCacheCount: Int = 0,
-
-    /**
-     * 广告位是否开启预加载: 1: 开启, 0: 关闭
+     * 广告位是否开启预加载
      */
     @SerializedName("position_preload_state")
-    val positionPreloadState: Int = 1,
-
+    val positionPreloadState: Boolean = false,
     /**
      * 广告位配置信息
      */
@@ -36,4 +28,7 @@ class PositionConfig(
     var slotConfig: SlotConfig
 ): Serializable {
 
+    override fun toString(): String {
+        return "PositionConfig(positionId='$positionId', positionName='$positionName', positionPreloadState=$positionPreloadState, slotConfig=$slotConfig)"
+    }
 }
