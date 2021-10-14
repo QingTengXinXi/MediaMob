@@ -20,17 +20,17 @@ interface IMob {
     /**
      * 广告展示监听
      */
-    var viewShowListener: (() -> Unit)?
+    var mediaShowListener: (() -> Unit)?
 
     /**
      * 广告点击监听
      */
-    var viewClickListener: (() -> Unit)?
+    var mediaClickListener: (() -> Unit)?
 
     /**
      * 广告关闭监听
      */
-    var viewCloseListener: (() -> Unit)?
+    var mediaCloseListener: (() -> Unit)?
 
     /**
      * 广告销毁

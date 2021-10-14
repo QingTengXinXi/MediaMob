@@ -10,6 +10,7 @@ import com.media.mob.bean.InitialParams
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.helper.logger.MobLogger
 import com.media.mob.helper.thread.runMainThread
+import com.media.mob.media.rewardVideo.IRewardVideo
 import com.media.mob.media.view.IMobView
 import com.media.mob.platform.IPlatform
 
@@ -49,6 +50,10 @@ class CSJPlatform(private val id: String) : IPlatform {
 
     override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
         CSJSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
+    }
+
+    override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
+        CSJRewardVideo(mediaRequestParams.activity).requestRewardVideo(mediaRequestParams)
     }
 
     /**

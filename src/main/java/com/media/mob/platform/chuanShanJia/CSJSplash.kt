@@ -72,6 +72,8 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
             override fun onError(code: Int, message: String?) {
                 MobLogger.e(classTarget, "穿山甲开屏广告请求失败: Code=${code}, Message=${message ?: "Unknown"}")
 
+                mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
+
                 mediaRequestParams.mediaRequestResult.invoke(
                     MediaRequestResult(null, 60006, "穿山甲开屏广告请求失败: Code=${code}, Message=${message ?: "Unknown"}")
                 )
@@ -85,15 +87,19 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
             override fun onTimeout() {
                 MobLogger.e(classTarget, "穿山甲开屏广告请求超时")
 
+                mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "穿山甲开屏广告请求超时")
+
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null, 60010, "穿山甲开屏广告请求超时"))
             }
 
             override fun onSplashAdLoad(ttSplashAd: TTSplashAd?) {
                 if (ttSplashAd == null) {
-                    MobLogger.e(classTarget, "穿山甲开屏广告请求结果异常")
+                    MobLogger.e(classTarget, "穿山甲开屏广告请求结果异常，返回广告对象为Null")
+
+                    mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "穿山甲开屏广告请求结果异常，返回广告对象为Null")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(null, 60005, "穿山甲开屏广告请求结果异常，返回结果为Null")
+                        MediaRequestResult(null, 60005, "穿山甲开屏广告请求结果异常，返回广告对象为Null")
                     )
 
                     destroy()
@@ -109,6 +115,8 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
                     mediaRequestParams.slotParams.splashViewGroup?.addView(it)
                 }
 
+                mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+
                 mediaRequestParams.mediaRequestResult.invoke(
                     MediaRequestResult(this@CSJSplash)
                 )
@@ -120,7 +128,7 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
                     override fun onAdClicked(view: View?, type: Int) {
                         MobLogger.e(classTarget, "穿山甲开屏广告点击")
 
-                        invokeViewClickListener()
+                        invokeMediaClickListener()
 
                         reportMediaActionEvent(
                             "click",
@@ -135,7 +143,7 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
                     override fun onAdShow(view: View?, type: Int) {
                         MobLogger.e(classTarget, "穿山甲开屏广告展示")
 
-                        invokeViewShowListener()
+                        invokeMediaShowListener()
 
                         reportMediaActionEvent(
                             "show",
@@ -152,7 +160,7 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
 
                         if (!closeCallbackState) {
                             closeCallbackState = true
-                            invokeViewCloseListener()
+                            invokeMediaCloseListener()
                         }
                     }
 
@@ -164,12 +172,14 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
 
                         if (!closeCallbackState) {
                             closeCallbackState = true
-                            invokeViewCloseListener()
+                            invokeMediaCloseListener()
                         }
                     }
                 })
             }
         }
+
+        mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
         /**
          * 子线程请求会有异常

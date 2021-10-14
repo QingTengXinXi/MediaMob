@@ -94,12 +94,12 @@ class MobWebView : WebView {
              * 系统可以处理的url正则
              */
             private val ACCEPTED_URI_SCHEME = Pattern.compile(
-              "(?i)"
-                +
-                '('.toString()
-                +
-                "(?:http|https|ftp|file)://" + "|(?:inline|data|about|javascript):" + "|(?:.*:.*@)"
-                + ')'.toString() + "(.*)"
+                "(?i)"
+                    +
+                    '('.toString()
+                    +
+                    "(?:http|https|ftp|file)://" + "|(?:inline|data|about|javascript):" + "|(?:.*:.*@)"
+                    + ')'.toString() + "(.*)"
             )
 
             /**
@@ -152,7 +152,6 @@ class MobWebView : WebView {
                 view: WebView?,
                 url: String
             ) {
-
             }
 
             override fun onReceivedSslError(

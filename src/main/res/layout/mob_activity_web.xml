@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  tools:ignore="HardcodedText">
-
-  <androidx.appcompat.widget.Toolbar
-    android:id="@+id/web_header"
-    android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize"
-    android:layout_alignParentTop="true" />
-
-  <FrameLayout
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_below="@id/web_header">
+    tools:ignore="HardcodedText">
 
-    <ProgressBar
-      android:id="@+id/web_progress"
-      style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="4dp"
-      android:layout_gravity="top"
-      android:max="100"
-      android:visibility="visible" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/web_header"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:layout_alignParentTop="true" />
 
-    <com.media.mob.widget.MobWebView
-      android:id="@+id/web_container"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/web_header">
 
-    <RelativeLayout
-      android:id="@+id/rl_web_loading"
-      android:layout_width="160dp"
-      android:layout_height="160dp"
-      android:layout_gravity="center"
-      android:background="@drawable/mob_shape_web_loading">
+        <ProgressBar
+            android:id="@+id/web_progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="top"
+            android:max="100"
+            android:visibility="visible" />
 
-      <ProgressBar
-        android:id="@+id/pb_web_loading"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:indeterminateBehavior="repeat" />
+        <com.media.mob.widget.MobWebView
+            android:id="@+id/web_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/pb_web_loading"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:text="加载中..."
-        android:textColor="#FFFFFF"
-        android:visibility="visible" />
-    </RelativeLayout>
-  </FrameLayout>
+        <RelativeLayout
+            android:id="@+id/rl_web_loading"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_gravity="center"
+            android:background="@drawable/mob_shape_web_loading">
+
+            <ProgressBar
+                android:id="@+id/pb_web_loading"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="60dp"
+                android:indeterminateBehavior="repeat" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pb_web_loading"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="加载中..."
+                android:textColor="#FFFFFF"
+                android:visibility="visible" />
+        </RelativeLayout>
+    </FrameLayout>
 </RelativeLayout>

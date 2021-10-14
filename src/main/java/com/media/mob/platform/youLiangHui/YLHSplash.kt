@@ -57,7 +57,7 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
                 MobLogger.e(classTarget, "优量汇开屏广告Activity进入Resume状态: $clickedState : $activityPaused")
 
                 if (clickedState) {
-                    invokeViewCloseListener()
+                    invokeMediaCloseListener()
 
                     MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
                 }
@@ -84,6 +84,11 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
                         "优量汇开屏广告请求失败: Code=${adError?.errorCode ?: -1}, Message=${adError?.errorMsg ?: "Unknown"}"
                     )
 
+                    mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                        adError?.errorCode ?: -1,
+                        adError?.errorMsg ?: "Unknown"
+                    )
+
                     mediaRequestParams.mediaRequestResult.invoke(
                         MediaRequestResult(
                             null, 60006,
@@ -98,6 +103,9 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
                 override fun onADLoaded(expireTimestamp: Long) {
                     if (!callbackSuccess) {
                         callbackSuccess = true
+
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
                     }
                 }
@@ -108,6 +116,9 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
                 override fun onADPresent() {
                     if (!callbackSuccess) {
                         callbackSuccess = true
+
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
                     }
 
@@ -120,12 +131,15 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
                 override fun onADExposure() {
                     if (!callbackSuccess) {
                         callbackSuccess = true
+
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
                     }
 
                     MobLogger.e(classTarget, "优量汇开屏广告曝光")
 
-                    invokeViewShowListener()
+                    invokeMediaShowListener()
 
                     reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                 }
@@ -138,7 +152,7 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
 
                     MobLogger.e(classTarget, "优量汇开屏广告点击")
 
-                    invokeViewClickListener()
+                    invokeMediaClickListener()
 
                     reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                 }
@@ -161,12 +175,12 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
 
                     if (clickedState) {
                         if (!activityPaused) {
-                            invokeViewCloseListener()
+                            invokeMediaCloseListener()
 
                             MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
                         }
                     } else {
-                        invokeViewCloseListener()
+                        invokeMediaCloseListener()
 
                         MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
                     }
@@ -178,6 +192,8 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
         if (mediaRequestParams.slotParams.forceShowDownloadDialog) {
             splashAd?.setDownloadConfirmListener(DownloadConfirmHelper.downloadConfirmListener)
         }
+
+        mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
         if (mediaRequestParams.slotParams.splashFullScreen) {
             splashAd?.fetchFullScreenAndShowIn(mediaRequestParams.slotParams.splashViewGroup)

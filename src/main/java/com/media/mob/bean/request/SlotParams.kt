@@ -4,7 +4,6 @@ import android.view.ViewGroup
 
 class SlotParams {
 
-
     /**
      * 开屏广告请求超时时间，单位：毫秒
      * 优量汇取值范围 3000 ~ 5000ms
@@ -25,10 +24,35 @@ class SlotParams {
     /**
      * 强制展示下载合规天窗
      */
-    var forceShowDownloadDialog : Boolean = true
+    var forceShowDownloadDialog: Boolean = true
 
     /**
      * 开屏广告使用的ViewGroup
      */
     var splashViewGroup: ViewGroup? = null
+
+    /**
+     * 激励视频是否静音播放
+     */
+    var rewardVideoMutePlay: Boolean = false
+
+    /**
+     * 本次广告请求的用途
+     */
+    var mediaLoadType: MediaLoadType = MediaLoadType.LOAD
+
+    /**
+     * 广告期望宽度: dp
+     */
+    var viewAcceptedWidth: Float = 100F
+
+    /**
+     * 广告期望高度: dp
+     */
+    var viewAcceptedHeight: Float = 100F
+
+    /**
+     * 是否使用TextureView播放视频
+     */
+    var useTextureView: Boolean = true
 }

@@ -22,7 +22,7 @@ import com.media.mob.platform.youLiangHui.helper.DownloadConfirmHelper
 import com.media.mob.platform.youLiangHui.helper.bean.ApkInfo
 import com.media.mob.widget.dialog.permission.PermissionDialog
 
-class MobConfirmActivity: AppCompatActivity() {
+class MobConfirmActivity : AppCompatActivity() {
 
     companion object {
         const val CONFIRM_APP_INFO_URL = "mob_confirm_app_info_url"

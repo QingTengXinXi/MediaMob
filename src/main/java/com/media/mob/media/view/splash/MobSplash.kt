@@ -12,7 +12,7 @@ import com.media.mob.media.view.IMobView
 import com.media.mob.platform.IPlatform
 
 @SuppressLint("ViewConstructor")
-class MobSplash(val activity: Activity, private val positionConfig: PositionConfig): IMobView(activity) {
+class MobSplash(val activity: Activity, private val positionConfig: PositionConfig) : IMobView(activity) {
 
     /**
      * 广告对象
@@ -51,38 +51,42 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
     }
 
     fun requestSplash(slotParams: SlotParams) {
-        val splashLoader = SplashLoader(activity, positionConfig, MediaRequestLog(positionConfig), object : MobRequestResult<IMobView> {
+        val splashLoader = SplashLoader(
+            activity,
+            positionConfig,
+            MediaRequestLog(positionConfig),
+            object : MobRequestResult<IMobView> {
 
-            override fun requestFailed(code: Int, message: String) {
-                requestFailedListener?.invoke(code, message)
-            }
-
-            override fun requestSucceed(result: IMobView) {
-                mobView = result
-
-                mobView?.viewShowListener = {
-                    invokeViewShowListener()
+                override fun requestFailed(code: Int, message: String) {
+                    requestFailedListener?.invoke(code, message)
                 }
 
-                mobView?.viewClickListener = {
-                    invokeViewClickListener()
-                }
+                override fun requestSucceed(result: IMobView) {
+                    mobView = result
 
-                mobView?.viewCloseListener = {
-                    invokeViewCloseListener()
-                }
-
-                if (mobView?.platformName == IPlatform.PLATFORM_CSJ) {
-                    if (mobView?.parent != null && mobView?.parent is ViewGroup) {
-                        (mobView?.parent as ViewGroup).removeView(mobView)
+                    mobView?.mediaShowListener = {
+                        invokeMediaShowListener()
                     }
 
-                    addView(mobView)
-                }
+                    mobView?.mediaClickListener = {
+                        invokeMediaClickListener()
+                    }
 
-                requestSuccessListener?.invoke()
-            }
-        })
+                    mobView?.mediaCloseListener = {
+                        invokeMediaCloseListener()
+                    }
+
+                    if (mobView?.platformName == IPlatform.PLATFORM_CSJ) {
+                        if (mobView?.parent != null && mobView?.parent is ViewGroup) {
+                            (mobView?.parent as ViewGroup).removeView(mobView)
+                        }
+
+                        addView(mobView)
+                    }
+
+                    requestSuccessListener?.invoke()
+                }
+            })
 
         splashLoader.handleRequest(slotParams)
     }

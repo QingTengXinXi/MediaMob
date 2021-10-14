@@ -28,12 +28,12 @@ object Constants {
     /**
      * 使用TextureView播放视频
      */
-    var useTextureView : Boolean = true
+    var useTextureView: Boolean = true
 
     /**
      * 是否允许展示通知栏提示
      */
-    var allowShowNotify : Boolean = true
+    var allowShowNotify: Boolean = true
 
     /**
      * 允许直接下载的网络状态集合

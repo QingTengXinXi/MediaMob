@@ -6,11 +6,20 @@ import com.media.mob.media.IMob
 
 abstract class IMobView(context: Context) : FrameLayout(context), IMob {
 
-    override var viewShowListener: (() -> Unit)? = null
+    /**
+     * 广告展示监听
+     */
+    override var mediaShowListener: (() -> Unit)? = null
 
-    override var viewClickListener: (() -> Unit)? = null
+    /**
+     * 广告点击监听
+     */
+    override var mediaClickListener: (() -> Unit)? = null
 
-    override var viewCloseListener: (() -> Unit)? = null
+    /**
+     * 广告关闭监听
+     */
+    override var mediaCloseListener: (() -> Unit)? = null
 
     /**
      * 请求成功的监听
@@ -25,29 +34,29 @@ abstract class IMobView(context: Context) : FrameLayout(context), IMob {
     /**
      * 执行广告View展示监听
      */
-    fun invokeViewShowListener() {
-        viewShowListener?.invoke()
+    fun invokeMediaShowListener() {
+        mediaShowListener?.invoke()
     }
 
     /**
      * 执行广告View点击监听
      */
-    fun invokeViewClickListener() {
-        viewClickListener?.invoke()
+    fun invokeMediaClickListener() {
+        mediaClickListener?.invoke()
     }
 
     /**
      * 执行广告View关闭监听
      */
-    fun invokeViewCloseListener() {
-        viewCloseListener?.invoke()
+    fun invokeMediaCloseListener() {
+        mediaCloseListener?.invoke()
     }
 
     override fun destroy() {
         this.removeAllViews()
 
-        viewShowListener = null
-        viewClickListener = null
-        viewCloseListener = null
+        mediaShowListener = null
+        mediaClickListener = null
+        mediaCloseListener = null
     }
 }

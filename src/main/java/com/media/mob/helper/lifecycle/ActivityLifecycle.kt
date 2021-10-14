@@ -52,23 +52,18 @@ open class ActivityLifecycle(private val currentActivity: Activity?) {
     }
 
     open fun activityCreated() {
-
     }
 
     open fun activityStarted() {
-
     }
 
     open fun activityResumed() {
-
     }
 
     open fun activityPaused() {
-
     }
 
     open fun activityStopped() {
-
     }
 
     open fun activityDestroyed() {

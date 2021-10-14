@@ -70,7 +70,7 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                     if (!closeCallbackState) {
                         closeCallbackState = true
 
-                        invokeViewCloseListener()
+                        invokeMediaCloseListener()
 
                         MobLogger.e(classTarget, "百青藤开屏广告执行广告关闭：$clickedState : $canInvokeClose")
                     }
@@ -126,6 +126,9 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                 override fun onADLoaded() {
                     if (!callbackSuccess) {
                         callbackSuccess = true
+
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTSplash))
                     }
                 }
@@ -169,12 +172,15 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                 override fun onAdPresent() {
                     if (!callbackSuccess) {
                         callbackSuccess = true
+
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTSplash))
                     }
 
                     MobLogger.e(classTarget, "百青藤开屏广告展示")
 
-                    invokeViewShowListener()
+                    invokeMediaShowListener()
 
                     reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                 }
@@ -185,6 +191,9 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                 override fun onAdClick() {
                     if (!callbackSuccess) {
                         callbackSuccess = true
+
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTSplash))
                     }
 
@@ -193,7 +202,7 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
 
                     MobLogger.e(classTarget, "百青藤开屏广告点: $clickedState ")
 
-                    invokeViewClickListener()
+                    invokeMediaClickListener()
 
                     reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                 }
@@ -210,7 +219,7 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
 
                             MobLogger.e(classTarget, "百青藤开屏广告执行广告关闭：$clickedState : $canInvokeClose")
 
-                            invokeViewCloseListener()
+                            invokeMediaCloseListener()
                         }
                     } else {
                         canInvokeClose = true
@@ -227,7 +236,7 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                         if (!closeCallbackState) {
                             closeCallbackState = true
 
-                            invokeViewCloseListener()
+                            invokeMediaCloseListener()
 
                             MobLogger.e(classTarget, "百青藤开屏广告执行广告关闭：$clickedState : $canInvokeClose")
                         }
@@ -240,6 +249,8 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
         if (mediaRequestParams.tacticsInfo.thirdAppId.isNotEmpty()) {
             splashAd?.setAppSid(mediaRequestParams.tacticsInfo.thirdAppId)
         }
+
+        mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
         splashAd?.loadAndShow(mediaRequestParams.slotParams.splashViewGroup)
     }

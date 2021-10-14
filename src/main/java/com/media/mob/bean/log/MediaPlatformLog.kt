@@ -58,7 +58,7 @@ class MediaPlatformLog(
      * 第三方广告位请求失败Message
      */
     @SerializedName("third_fail_message")
-    var thirdFailMessage: String = ""
+    var thirdFailMessage: String = "Unknown"
 
     /**
      * 插入广告位请求时间
@@ -76,7 +76,7 @@ class MediaPlatformLog(
         thirdRequestResult = false
 
         thirdFailCode = code ?: -1
-        thirdFailMessage = message ?: ""
+        thirdFailMessage = message ?: "Unknown"
     }
 
     /**

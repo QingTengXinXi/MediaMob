@@ -63,7 +63,6 @@ class InitialParams {
             Constants.allowDownloadNetworkType = value
         }
 
-
     companion object {
         /**
          * 网络类型
