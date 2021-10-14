@@ -8,6 +8,7 @@ import com.media.mob.helper.logger.MobLogger
 import com.media.mob.media.view.IMobView
 import com.media.mob.media.view.MobViewWrapper
 import com.media.mob.platform.IPlatform
+import com.media.mob.platform.youLiangHui.helper.DownloadConfirmHelper
 import com.qq.e.ads.splash.SplashAD
 import com.qq.e.ads.splash.SplashADListener
 import com.qq.e.comm.util.AdError
@@ -41,6 +42,9 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
      */
     private var clickedState = false
 
+    /**
+     * Activity生命周期监测
+     */
     private var activityLifecycle: ActivityLifecycle? = null
 
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
@@ -165,9 +169,9 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
             if (mediaRequestParams.slotParams.splashRequestTimeOut >= 0) mediaRequestParams.slotParams.splashRequestTimeOut.toInt() else 0
         )
 
-        // if (mediaRequestParams.slotParams.forceShowDownloadDialog) {
-        //     splashAd?.setDownloadConfirmListener(DownloadConfirmHelper.downloadConfirmListener)
-        // }
+        if (mediaRequestParams.slotParams.forceShowDownloadDialog) {
+            splashAd?.setDownloadConfirmListener(DownloadConfirmHelper.downloadConfirmListener)
+        }
 
         if (mediaRequestParams.slotParams.splashFullScreen) {
             splashAd?.fetchFullScreenAndShowIn(mediaRequestParams.slotParams.splashViewGroup)

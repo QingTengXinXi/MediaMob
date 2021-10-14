@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="mob_custom_dialog" parent="@android:style/Theme.Dialog">
+    <item name="android:windowFrame">@null</item>
+    <item name="android:windowIsFloating">true</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:background">@android:color/transparent</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:backgroundDimEnabled">true</item>
+    <item name="android:backgroundDimAmount">0.6</item>
+    <item name="android:windowAnimationStyle">@style/mob_dialog_anim</item>
+  </style>
+
+  <style name="mob_dialog_anim">
+    <item name="android:windowEnterAnimation">@anim/mob_dialog_enter</item>
+    <item name="android:windowExitAnimation">@anim/mob_dialog_exit</item>
+  </style>
+
+  <style name="mob_dialog_activity" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowFullscreen">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowFrame">@null</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowIsFloating">true</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:backgroundDimEnabled">true</item>
+    <item name="android:backgroundDimAmount">0.6</item>
+    <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+  </style>
+</resources>

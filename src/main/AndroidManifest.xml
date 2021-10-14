@@ -32,5 +32,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/gdt_file_path" />
         </provider>
+
+        <!-- 聚合广告SDK -->
+        <activity
+            android:name=".activity.MobConfirmActivity"
+            android:exported="false"
+            android:multiprocess="false"
+            android:screenOrientation="behind"
+            android:theme="@style/mob_dialog_activity" />
+
+        <activity
+            android:name=".activity.MobWebActivity"
+            android:exported="false"
+            android:multiprocess="false"
+            android:screenOrientation="behind"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 </manifest>

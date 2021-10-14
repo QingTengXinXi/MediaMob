@@ -6,6 +6,7 @@ import com.baidu.mobads.sdk.api.SplashAd
 import com.baidu.mobads.sdk.api.SplashInteractionListener
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
+import com.media.mob.helper.lifecycle.ActivityLifecycle
 import com.media.mob.helper.logger.MobLogger
 import com.media.mob.media.view.IMobView
 import com.media.mob.media.view.MobViewWrapper
@@ -46,6 +47,11 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
     private var closeCallbackState = false
 
     /**
+     * Activity生命周期监测
+     */
+    private var activityLifecycle: ActivityLifecycle? = null
+
+    /**
      * 销毁广告对象
      */
     override fun destroy() {
@@ -56,6 +62,21 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
     }
 
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+        activityLifecycle = object : ActivityLifecycle(mediaRequestParams.activity) {
+            override fun activityResumed() {
+                super.activityResumed()
+
+                if (clickedState && canInvokeClose) {
+                    if (!closeCallbackState) {
+                        closeCallbackState = true
+
+                        invokeViewCloseListener()
+
+                        MobLogger.e(classTarget, "百青藤开屏广告执行广告关闭：$clickedState : $canInvokeClose")
+                    }
+                }
+            }
+        }
 
         val parameters = RequestParameters.Builder()
         /**
@@ -72,6 +93,11 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
          * 是否在加载开屏物料后回调请求成功，默认请求到广告立即回调
          */
         parameters.addExtra(SplashAd.KEY_LOAD_AFTER_CACHE_END, "false")
+
+        /**
+         * 是否展示点击引导按钮，默认不展示。若设置可限制点击区域，则此选项默认打开
+         */
+        parameters.addExtra(SplashAd.KEY_DISPLAY_CLICK_REGION, "true")
 
         /**
          * 是否限制点击区域，默认不限制
@@ -105,19 +131,36 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                 }
 
                 /**
-                 * 开屏广告关闭回调
+                 * 开屏广告加载失败回调
                  */
-                override fun onAdDismissed() {
-                    MobLogger.e(classTarget, "百青藤开屏广告关闭：$clickedState ")
+                override fun onAdFailed(message: String?) {
+                    MobLogger.e(classTarget, "百青藤开屏广告请求失败: Message=${message ?: "Unknown"}")
 
-                    if (canInvokeClose) {
-                        if (!closeCallbackState) {
-                            closeCallbackState = true
-                            invokeViewCloseListener()
-                        }
-                    } else {
-                        canInvokeClose = true
-                    }
+                    mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, message ?: "Unknown")
+
+                    mediaRequestParams.mediaRequestResult.invoke(
+                        MediaRequestResult(
+                            null,
+                            60006,
+                            "百青藤开屏广告请求失败: Code=-1, Message=${message ?: "Unknown"}"
+                        )
+                    )
+
+                    destroy()
+                }
+
+                /**
+                 * 开屏广告物料缓存成功回调
+                 */
+                override fun onAdCacheSuccess() {
+                    MobLogger.e(classTarget, "百青藤开屏广告物料缓存成功")
+                }
+
+                /**
+                 * 开屏广告物料缓存失败回调
+                 */
+                override fun onAdCacheFailed() {
+                    MobLogger.e(classTarget, "百青藤开屏广告物料缓存失败")
                 }
 
                 /**
@@ -156,41 +199,37 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                 }
 
                 /**
-                 * 开屏广告加载失败回调
+                 * 开屏广告关闭回调
                  */
-                override fun onAdFailed(message: String?) {
-                    MobLogger.e(classTarget, "百青藤开屏广告请求失败: Message=${message ?: "Unknown"}")
+                override fun onAdDismissed() {
+                    MobLogger.e(classTarget, "百青藤开屏广告关闭：$clickedState : $canInvokeClose")
 
-                    mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, message ?: "Unknown")
+                    if (canInvokeClose) {
+                        if (!closeCallbackState) {
+                            closeCallbackState = true
 
-                    mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(
-                            null,
-                            60006,
-                            "百青藤开屏广告请求失败: Code=-1, Message=${message ?: "Unknown"}"
-                        )
-                    )
-                    destroy()
-                }
+                            MobLogger.e(classTarget, "百青藤开屏广告执行广告关闭：$clickedState : $canInvokeClose")
 
-                override fun onAdCacheSuccess() {
-                    MobLogger.e(classTarget, "百青藤开屏广告缓存成功")
-                }
-
-                override fun onAdCacheFailed() {
-                    MobLogger.e(classTarget, "百青藤开屏广告缓存失败")
+                            invokeViewCloseListener()
+                        }
+                    } else {
+                        canInvokeClose = true
+                    }
                 }
 
                 /**
                  * 开屏广告落地页关闭回调
                  */
                 override fun onLpClosed() {
-                    MobLogger.e(classTarget, "百青藤开屏广告落地页关闭：$clickedState ")
+                    MobLogger.e(classTarget, "百青藤开屏广告落地页关闭：$clickedState : $canInvokeClose")
 
                     if (canInvokeClose) {
                         if (!closeCallbackState) {
                             closeCallbackState = true
+
                             invokeViewCloseListener()
+
+                            MobLogger.e(classTarget, "百青藤开屏广告执行广告关闭：$clickedState : $canInvokeClose")
                         }
                     } else {
                         canInvokeClose = true
