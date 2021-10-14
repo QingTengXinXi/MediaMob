@@ -1,6 +1,7 @@
 package com.media.mob.bean
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 class MobConfig(
 
@@ -21,7 +22,7 @@ class MobConfig(
      */
     @SerializedName("media_config")
     val mediaConfig: MediaConfig
-) {
+) : Serializable {
 
     fun checkParamsValidity(): Boolean {
         return platformConfig.isNotEmpty()

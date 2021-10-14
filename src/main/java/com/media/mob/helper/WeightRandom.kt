@@ -1,15 +1,16 @@
 package com.media.mob.helper
 
-import com.media.mob.bean.SlotTactics
+import com.media.mob.bean.TacticsConfig
+import com.media.mob.bean.TacticsInfo
 import java.util.SortedMap
 import java.util.TreeMap
 
-class WeightRandom(slotTacticsList: ArrayList<SlotTactics>) {
+class WeightRandom(tacticsConfig: TacticsConfig) {
 
-    private val weightMap: TreeMap<Double, SlotTactics> = TreeMap<Double, SlotTactics>()
+    private val weightMap: TreeMap<Double, TacticsInfo> = TreeMap<Double, TacticsInfo>()
 
     init {
-        for (slotTactics in slotTacticsList) {
+        for (slotTactics in tacticsConfig.tacticsInfoList) {
             val summation: Double = if (this.weightMap.size == 0) {
                 0.00
             } else {
@@ -20,10 +21,10 @@ class WeightRandom(slotTacticsList: ArrayList<SlotTactics>) {
         }
     }
 
-    fun random(): SlotTactics? {
+    fun random(): TacticsInfo? {
         val randomWeight = weightMap.lastKey() * Math.random()
 
-        val tailMap: SortedMap<Double, SlotTactics>? = weightMap.tailMap(randomWeight, false)
+        val tailMap: SortedMap<Double, TacticsInfo>? = weightMap.tailMap(randomWeight, false)
 
         return tailMap?.get(tailMap.firstKey())
     }

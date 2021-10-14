@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 
 class Information {
+
     @SerializedName("title")
     var title: String? = null
 

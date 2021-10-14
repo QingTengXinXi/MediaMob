@@ -117,7 +117,7 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
             parameters.addExtra(SplashAd.KEY_POPDIALOG_DOWNLOAD, "false")
         }
 
-        splashAd = SplashAd(mediaRequestParams.activity, mediaRequestParams.slotTactics.thirdSlotId,
+        splashAd = SplashAd(mediaRequestParams.activity, mediaRequestParams.tacticsInfo.thirdSlotId,
             parameters.build(), object : SplashInteractionListener {
 
                 /**
@@ -176,7 +176,7 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
 
                     invokeViewShowListener()
 
-                    reportMediaActionEvent("show", mediaRequestParams.slotTactics, mediaRequestParams.mediaRequestLog)
+                    reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                 }
 
                 /**
@@ -195,7 +195,7 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
 
                     invokeViewClickListener()
 
-                    reportMediaActionEvent("click", mediaRequestParams.slotTactics, mediaRequestParams.mediaRequestLog)
+                    reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                 }
 
                 /**
@@ -237,8 +237,8 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                 }
             })
 
-        if (mediaRequestParams.slotTactics.thirdAppId.isNotEmpty()) {
-            splashAd?.setAppSid(mediaRequestParams.slotTactics.thirdAppId)
+        if (mediaRequestParams.tacticsInfo.thirdAppId.isNotEmpty()) {
+            splashAd?.setAppSid(mediaRequestParams.tacticsInfo.thirdAppId)
         }
 
         splashAd?.loadAndShow(mediaRequestParams.slotParams.splashViewGroup)

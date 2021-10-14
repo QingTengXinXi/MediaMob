@@ -55,7 +55,7 @@ class MobWebView : WebView {
         settings.setGeolocationEnabled(true)
         settings.setSupportMultipleWindows(false)
         settings.setAppCacheEnabled(true)
-        settings.setAppCachePath(File(context.cacheDir, "youth_webview").path)
+        settings.setAppCachePath(File(context.cacheDir, "mob_web").path)
         settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
 
         webViewClient = object : WebViewClient() {

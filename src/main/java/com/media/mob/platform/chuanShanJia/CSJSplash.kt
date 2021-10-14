@@ -49,7 +49,7 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
         val adNative = TTAdSdk.getAdManager().createAdNative(mediaRequestParams.activity)
 
         val builder = AdSlot.Builder()
-            .setCodeId(mediaRequestParams.slotTactics.thirdSlotId)
+            .setCodeId(mediaRequestParams.tacticsInfo.thirdSlotId)
             .setImageAcceptedSize(1080, 1920)
 
         if (mediaRequestParams.slotParams.splashLimitClickArea) {
@@ -124,7 +124,7 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
 
                         reportMediaActionEvent(
                             "click",
-                            mediaRequestParams.slotTactics,
+                            mediaRequestParams.tacticsInfo,
                             mediaRequestParams.mediaRequestLog
                         )
                     }
@@ -139,7 +139,7 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
 
                         reportMediaActionEvent(
                             "show",
-                            mediaRequestParams.slotTactics,
+                            mediaRequestParams.tacticsInfo,
                             mediaRequestParams.mediaRequestLog
                         )
                     }

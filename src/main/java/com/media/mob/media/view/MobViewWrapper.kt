@@ -1,7 +1,7 @@
 package com.media.mob.media.view
 
 import android.content.Context
-import com.media.mob.bean.SlotTactics
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.log.MediaRequestLog
 
 abstract class MobViewWrapper(context: Context): IMobView(context) {
@@ -16,7 +16,7 @@ abstract class MobViewWrapper(context: Context): IMobView(context) {
     viewCloseListener = null
   }
 
-  fun reportMediaActionEvent(event: String, slotTactics: SlotTactics, mediaRequestLog: MediaRequestLog) {
+  fun reportMediaActionEvent(event: String, tacticsInfo: TacticsInfo, mediaRequestLog: MediaRequestLog) {
     if (("show" == event && !showReportState) || ("click" == event && !clickReportState)) {
       if ("show" == event) {
         showReportState = true
@@ -32,9 +32,9 @@ abstract class MobViewWrapper(context: Context): IMobView(context) {
 
       params["third_slot_type"] = "Splash"
 
-      params["third_app_id"] = slotTactics.thirdAppId
-      params["third_slot_id"] = slotTactics.thirdSlotId
-      params["third_platform_name"] = slotTactics.thirdPlatformName
+      params["third_app_id"] = tacticsInfo.thirdAppId
+      params["third_slot_id"] = tacticsInfo.thirdSlotId
+      params["third_platform_name"] = tacticsInfo.thirdPlatformName
     }
   }
 }

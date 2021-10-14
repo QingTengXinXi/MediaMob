@@ -3,7 +3,9 @@ package com.media.mob.dispatch.loader
 import android.app.Activity
 import com.media.mob.Constants
 import com.media.mob.bean.PositionConfig
-import com.media.mob.bean.SlotTactics
+import com.media.mob.bean.TacticsConfig
+import com.media.mob.bean.TacticsInfo
+import com.media.mob.bean.TacticsType
 import com.media.mob.bean.log.MediaPlatformLog
 import com.media.mob.bean.log.MediaRequestLog
 import com.media.mob.bean.request.MediaRequestParams
@@ -18,10 +20,10 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 abstract class MobLoader<T>(
     val activity: Activity,
-    val slotType: String,
-    val positionConfig: PositionConfig,
-    val mediaRequestLog: MediaRequestLog,
-    val mobRequestResult: MobRequestResult<T>
+    private val slotType: String,
+    private val positionConfig: PositionConfig,
+    private val mediaRequestLog: MediaRequestLog,
+    private val mobRequestResult: MobRequestResult<T>
 ) {
 
     private val classTarget = MobLoader::class.java.simpleName
@@ -29,18 +31,25 @@ abstract class MobLoader<T>(
     /**
      * 广告位流量策略配置
      */
-    private val slotTacticsQueue: ConcurrentLinkedQueue<ArrayList<SlotTactics>> by lazy {
-        ConcurrentLinkedQueue<ArrayList<SlotTactics>>()
+    private val tacticsConfigQueue: ConcurrentLinkedQueue<TacticsConfig> by lazy {
+        ConcurrentLinkedQueue<TacticsConfig>()
+    }
+
+    /**
+     * 流量优先级策略配置
+     */
+    private val tacticsInfoQueue: ConcurrentLinkedQueue<TacticsInfo> by lazy {
+        ConcurrentLinkedQueue<TacticsInfo>()
     }
 
     /**
      * 初始化配置信息
      */
     init {
-        slotTacticsQueue.clear()
+        tacticsConfigQueue.clear()
 
-        positionConfig.slotConfig.slotTacticsList.forEach {
-            slotTacticsQueue.add(it)
+        positionConfig.slotConfig.slotTacticsConfig.forEach {
+            tacticsConfigQueue.add(it)
         }
     }
 
@@ -48,28 +57,28 @@ abstract class MobLoader<T>(
      * 处理广告流量策略配置
      */
     fun handleRequest(slotParams: SlotParams) {
-        val slotTactics = choiceSlotTactics()
+        val tacticsInfo = choiceSlotTactics()
 
-        MobLogger.e(classTarget, "获取到的策略信息为: $slotTactics")
+        MobLogger.e(classTarget, "获取到的策略信息为: $tacticsInfo")
 
-        if (slotTactics == null) {
+        if (tacticsInfo == null) {
             invokeRequestFailed()
         } else {
-            handleSlotTactics(slotParams, slotTactics)
+            handleSlotTactics(slotParams, tacticsInfo)
         }
     }
 
     /**
      * 处理广告位策略执行
      */
-    private fun handleSlotTactics(slotParams: SlotParams, slotTactics: SlotTactics) {
+    private fun handleSlotTactics(slotParams: SlotParams, tacticsInfo: TacticsInfo) {
         val mediaPlatformLogs =
-            MediaPlatformLog(slotTactics.thirdAppId, slotTactics.thirdSlotId, slotType, slotTactics.thirdPlatformName)
+            MediaPlatformLog(tacticsInfo.thirdAppId, tacticsInfo.thirdSlotId, slotType, tacticsInfo.thirdPlatformName)
 
-        if (!Constants.platforms.containsKey(slotTactics.thirdPlatformName)) {
+        if (!Constants.platforms.containsKey(tacticsInfo.thirdPlatformName)) {
             handleTacticsFailed(slotParams, mediaPlatformLogs)
         } else {
-            val platform = Constants.platforms[slotTactics.thirdPlatformName]
+            val platform = Constants.platforms[tacticsInfo.thirdPlatformName]
 
             if (platform != null) {
                 runMobMediaLoaderThread {
@@ -78,7 +87,7 @@ abstract class MobLoader<T>(
                         MediaRequestParams(
                             activity,
                             slotParams,
-                            slotTactics,
+                            tacticsInfo,
                             mediaRequestLog,
                             mediaPlatformLogs
                         ) { result: MediaRequestResult<T> ->
@@ -140,16 +149,28 @@ abstract class MobLoader<T>(
     /**
      * 获取一个广告位策略
      */
-    private fun choiceSlotTactics(): SlotTactics? {
-        if (slotTacticsQueue.isNotEmpty()) {
-            val slotTacticsList = slotTacticsQueue.poll()
+    private fun choiceSlotTactics(): TacticsInfo? {
+        if (tacticsInfoQueue.isNotEmpty()) {
+            return tacticsInfoQueue.poll()
+        }
 
-            if (slotTacticsList != null && slotTacticsList.size > 0) {
-                return if (slotTacticsList.size > 1) {
-                    val weightRandom = WeightRandom(slotTacticsList)
-                    weightRandom.random()
-                } else {
-                    slotTacticsList.first()
+        if (tacticsConfigQueue.isNotEmpty()) {
+            val tacticsConfig = tacticsConfigQueue.poll()
+
+            if (tacticsConfig?.checkParamsValidity() == true) {
+                return when (tacticsConfig.tacticsType) {
+                    TacticsType.TYPE_WEIGHT -> {
+                        val weightRandom = WeightRandom(tacticsConfig)
+                        weightRandom.random()
+                    }
+                    TacticsType.TYPE_PRIORITY -> {
+                        tacticsInfoQueue.addAll(tacticsConfig.tacticsInfoList)
+                        tacticsInfoQueue.poll()
+                    }
+                    else -> {
+                        MobLogger.e(classTarget, "暂不支持并行请求的广告位执行策略")
+                        null
+                    }
                 }
             }
         }

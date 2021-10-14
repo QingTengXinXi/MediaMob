@@ -3,7 +3,7 @@ package com.media.mob.bean
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-class SlotTactics(
+class TacticsInfo(
     /**
      * 第三方广告平台的应用id
      */
@@ -27,9 +27,9 @@ class SlotTactics(
      */
     @SerializedName("third_platform_name")
     var thirdPlatformName: String,
-):Serializable {
+) : Serializable {
 
     override fun toString(): String {
-        return "SlotTactics(tacticsWeight=$tacticsWeight, thirdAppId='$thirdAppId', thirdSlotId='$thirdSlotId', thirdPlatformName='$thirdPlatformName')"
+        return "TacticsInfo(tacticsWeight=$tacticsWeight, thirdAppId='$thirdAppId', thirdSlotId='$thirdSlotId', thirdPlatformName='$thirdPlatformName')"
     }
 }

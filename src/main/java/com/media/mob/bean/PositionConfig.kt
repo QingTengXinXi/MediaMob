@@ -26,7 +26,7 @@ class PositionConfig(
      */
     @SerializedName("slot_config")
     var slotConfig: SlotConfig
-): Serializable {
+) : Serializable {
 
     override fun toString(): String {
         return "PositionConfig(positionId='$positionId', positionName='$positionName', positionPreloadState=$positionPreloadState, slotConfig=$slotConfig)"

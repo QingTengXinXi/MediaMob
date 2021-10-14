@@ -1,4 +1,6 @@
 package com.media.mob.bean
 
-class MediaConfig {
+import java.io.Serializable
+
+class MediaConfig : Serializable {
 }

@@ -1,6 +1,7 @@
 package com.media.mob.bean
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 class PlatformConfig(
     /**
@@ -14,7 +15,7 @@ class PlatformConfig(
      */
     @SerializedName("platform_name")
     val platformName: String
-) {
+) : Serializable {
 
     override fun toString(): String {
         return "PlatformConfig(platformAppId='$platformAppId', platformName='$platformName')"

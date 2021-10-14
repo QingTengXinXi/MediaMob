@@ -11,13 +11,13 @@ class SlotConfig(
     val slotType: String,
 
     /**
-     * 广告位流量策略
+     * 广告位流量策略配置
      */
-    @SerializedName("slot_tactics_list")
-    val slotTacticsList: ArrayList<ArrayList<SlotTactics>>,
+    @SerializedName("slot_tactics_config")
+    val slotTacticsConfig: ArrayList<TacticsConfig>,
 ) : Serializable {
 
     override fun toString(): String {
-        return "SlotConfig(slotType='$slotType', slotTacticsList=$slotTacticsList)"
+        return "SlotConfig(slotType='$slotType', slotTacticsConfig=$slotTacticsConfig)"
     }
 }

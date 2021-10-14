@@ -58,6 +58,8 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
 
                 if (clickedState) {
                     invokeViewCloseListener()
+
+                    MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
                 }
             }
 
@@ -71,7 +73,7 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
 
         splashAd = SplashAD(
             mediaRequestParams.activity,
-            mediaRequestParams.slotTactics.thirdSlotId,
+            mediaRequestParams.tacticsInfo.thirdSlotId,
             object : SplashADListener {
                 /**
                  * 开屏广告加载失败
@@ -125,7 +127,7 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
 
                     invokeViewShowListener()
 
-                    reportMediaActionEvent("show", mediaRequestParams.slotTactics, mediaRequestParams.mediaRequestLog)
+                    reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                 }
 
                 /**
@@ -138,7 +140,7 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
 
                     invokeViewClickListener()
 
-                    reportMediaActionEvent("click", mediaRequestParams.slotTactics, mediaRequestParams.mediaRequestLog)
+                    reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                 }
 
                 /**
@@ -160,9 +162,13 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
                     if (clickedState) {
                         if (!activityPaused) {
                             invokeViewCloseListener()
+
+                            MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
                         }
                     } else {
                         invokeViewCloseListener()
+
+                        MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
                     }
                 }
             },
