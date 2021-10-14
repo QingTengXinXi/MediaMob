@@ -43,7 +43,8 @@ class MobWebView : WebView {
         init()
     }
 
-    @SuppressLint("SetJavaScriptEnabled") fun init() {
+    @SuppressLint("SetJavaScriptEnabled")
+    fun init() {
         settings.useWideViewPort = true
         settings.builtInZoomControls = false
         settings.displayZoomControls = false
@@ -109,7 +110,7 @@ class MobWebView : WebView {
                 if (url.startsWith("intent://") || url.startsWith("android-app://")) {
                     return false
                 }
-                val lowerCaseUrl = url.toLowerCase(Locale.ROOT)
+                val lowerCaseUrl = url.lowercase(Locale.ROOT)
                 val acceptedUrlSchemeMatcher = ACCEPTED_URI_SCHEME.matcher(lowerCaseUrl)
                 return acceptedUrlSchemeMatcher.matches()
             }
@@ -126,11 +127,12 @@ class MobWebView : WebView {
                 if (!isAcceptedScheme(url)) {
                     MobLogger.i(classTarget, "DeepLink: $url")
                     try {
-                        val intent = if (url.startsWith("android-app://")) {
+                        val intent = if (url.startsWith("android-app://") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                             Intent.parseUri(url, Intent.URI_ANDROID_APP_SCHEME)
                         } else {
                             Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
                         }
+
                         intent.component = null
                         intent.selector = null
 

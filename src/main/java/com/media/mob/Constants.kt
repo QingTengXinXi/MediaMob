@@ -44,4 +44,9 @@ object Constants {
      * 广告维护的第三方平台
      */
     var platforms = HashMap<String, IPlatform>()
+
+    /**
+     * 支持的广告类型
+     */
+    val supportType = arrayListOf("Splash", "RewardVideo", "Material")
 }

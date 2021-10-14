@@ -48,8 +48,10 @@ abstract class MobLoader<T>(
     init {
         tacticsConfigQueue.clear()
 
-        positionConfig.slotConfig.slotTacticsConfig.forEach {
-            tacticsConfigQueue.add(it)
+        if (positionConfig.slotConfig.checkParamsValidity()) {
+            positionConfig.slotConfig.slotTacticsConfig.forEach {
+                tacticsConfigQueue.add(it)
+            }
         }
     }
 
