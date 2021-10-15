@@ -9,6 +9,7 @@ interface IPlatform {
     companion object {
         const val PLATFORM_BQT = "BQT"
         const val PLATFORM_CSJ = "CSJ"
+        const val PLATFORM_JZT = "JZT"
         const val PLATFORM_YLH = "YLH"
     }
 

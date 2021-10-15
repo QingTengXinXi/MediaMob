@@ -9,8 +9,6 @@ android {
   defaultConfig {
     minSdk 21
     targetSdk 30
-    versionCode 1
-    versionName "1.0"
 
     consumerProguardFiles "consumer-rules.pro"
   }
@@ -41,6 +39,7 @@ dependencies {
 
   implementation 'com.jakewharton:disklrucache:2.0.2'
 
+  implementation files('libs/jad_yun_sdk_v1.2.8.aar')
   implementation files('libs/open_ad_sdk_4.0.0.6.aar')
   implementation files('libs/GDTSDK.unionNormal.4.420.1290.aar')
   implementation files('libs/Baidu_MobAds_SDK-release_v9.16.aar')

@@ -90,3 +90,6 @@
 -keep class android.support.v7.**{
     public *;
 }
+
+# 京准通广告SDK
+-keep class com.jd.ad.sdk.** { *; }

@@ -92,6 +92,9 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null, 60010, "穿山甲开屏广告请求超时"))
             }
 
+            /**
+             * 开屏广告请求成功回调
+             */
             override fun onSplashAdLoad(ttSplashAd: TTSplashAd?) {
                 if (ttSplashAd == null) {
                     MobLogger.e(classTarget, "穿山甲开屏广告请求结果异常，返回广告对象为Null")

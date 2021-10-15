@@ -9,6 +9,7 @@ import com.media.mob.helper.logger.MobLogger
 import com.media.mob.platform.IPlatform
 import com.media.mob.platform.baiQingTeng.BQTPlatform
 import com.media.mob.platform.chuanShanJia.CSJPlatform
+import com.media.mob.platform.jingZhunTong.JZTPlatform
 import com.media.mob.platform.youLiangHui.YLHPlatform
 
 @Keep
@@ -69,6 +70,10 @@ object MediaMob {
                 IPlatform.PLATFORM_CSJ -> {
                     Constants.platforms[IPlatform.PLATFORM_CSJ] = CSJPlatform(it.platformAppId)
                     Constants.platforms[IPlatform.PLATFORM_CSJ]?.initial(initialParams)
+                }
+                IPlatform.PLATFORM_JZT -> {
+                    Constants.platforms[IPlatform.PLATFORM_JZT] = JZTPlatform(it.platformAppId)
+                    Constants.platforms[IPlatform.PLATFORM_JZT]?.initial(initialParams)
                 }
                 IPlatform.PLATFORM_YLH -> {
                     Constants.platforms[IPlatform.PLATFORM_YLH] = YLHPlatform(it.platformAppId)

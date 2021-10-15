@@ -9,7 +9,6 @@ import kotlin.math.log10
 import kotlin.math.pow
 
 fun Context.checkPermissionGranted(permission: String): Boolean {
-
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         this.checkSelfPermission(permission)
     } else {
