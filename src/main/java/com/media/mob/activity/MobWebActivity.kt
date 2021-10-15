@@ -34,7 +34,7 @@ class MobWebActivity : AppCompatActivity() {
 
         window.statusBarColor = Color.WHITE
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
 
         setSupportActionBar(toolbar)
 
@@ -53,6 +53,7 @@ class MobWebActivity : AppCompatActivity() {
             backArrow?.colorFilter = PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP)
 
             supportActionBar?.setHomeAsUpIndicator(backArrow)
+
         } catch (exception: Exception) {
             exception.printStackTrace()
         }

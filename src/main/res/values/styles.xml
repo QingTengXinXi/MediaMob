@@ -9,8 +9,12 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:backgroundDimAmount">0.6</item>
+        <item name="android:backgroundDimAmount">0</item>
         <item name="android:windowAnimationStyle">@style/mob_dialog_anim</item>
+        <item name="listPreferredItemPaddingLeft">0dp</item>
+        <item name="listPreferredItemPaddingRight">0dp</item>
+        <item name="listPreferredItemPaddingStart">0dp</item>
+        <item name="listPreferredItemPaddingEnd">0dp</item>
     </style>
 
     <style name="mob_dialog_anim">

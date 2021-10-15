@@ -2,7 +2,6 @@ package com.media.mob.platform.chuanShanJia
 
 import android.app.Activity
 import android.content.res.Configuration
-import android.os.SystemClock
 import com.bytedance.sdk.openadsdk.AdSlot.Builder
 import com.bytedance.sdk.openadsdk.TTAdConstant
 import com.bytedance.sdk.openadsdk.TTAdLoadType
@@ -144,7 +143,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
 
                 rewardVideoAd = ttRewardedVideoAd
 
-                MobLogger.e(classTarget, "穿山甲激励视频广告展示截止时间: ${rewardVideoAd?.expirationTimestamp} : 当前时间: ${SystemClock.elapsedRealtime()}")
+                MobLogger.e(classTarget, "穿山甲激励视频广告展示截止时间: ${rewardVideoAd?.expirationTimestamp} : 当前时间: ${System.currentTimeMillis()}")
 
                 rewardVideoAd?.setShowDownLoadBar(true)
 
