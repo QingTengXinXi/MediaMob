@@ -1,146 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:background="@drawable/mob_shape_dialog_background"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:background="#66000000"
     tools:ignore="HardcodedText">
 
     <RelativeLayout
-        android:id="@+id/rl_confirm_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:visibility="invisible">
+        android:layout_gravity="bottom"
+        android:background="@drawable/mob_shape_dialog_background">
 
-        <ImageView
-            android:id="@+id/iv_confirm_close"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:contentDescription="@string/app_name"
-            android:padding="12dp"
-            android:src="@drawable/mob_icon_close" />
-
-        <ImageView
-            android:id="@+id/iv_confirm_icon"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="24dp"
-            android:contentDescription="@string/app_name"
-            tools:src="@mipmap/mob_icon_module_slogan" />
-
-        <TextView
-            android:id="@+id/tv_confirm_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/iv_confirm_icon"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="#212121"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:text="疯狂账单" />
-
-        <TextView
-            android:id="@+id/tv_confirm_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_confirm_name"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:textColor="#757575"
-            android:textSize="14sp"
-            tools:text="版本: 1.0.0 大小: 10M" />
-
-        <TextView
-            android:id="@+id/tv_confirm_company"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_confirm_info"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:ellipsize="end"
-            android:lineSpacingExtra="2dp"
-            android:maxLines="3"
-            android:textColor="#757575"
-            android:textSize="14sp"
-            tools:text="宁夏青藤信息科技有限公司" />
-
-        <LinearLayout
-            android:id="@+id/ll_confirm_prompt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_confirm_company"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp">
-
-            <TextView
-                android:id="@+id/tv_confirm_agreement"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="隐私协议"
-                android:textColor="#212121"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_confirm_permission"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="应用权限"
-                android:textColor="#212121"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/bu_confirm_action"
+        <RelativeLayout
+            android:id="@+id/rl_confirm_info"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_below="@id/ll_confirm_prompt"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/mob_shape_confirm_action"
-            android:text="立即下载"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_confirm_loading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="visible">
-
-        <ProgressBar
-            android:id="@+id/pb_confirm_loading"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp" />
+            android:gravity="bottom"
+            android:visibility="invisible">
 
-        <TextView
-            android:id="@+id/tv_confirm_message"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/iv_confirm_close"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@string/app_name"
+                android:padding="12dp"
+                android:src="@drawable/mob_icon_close" />
+
+            <ImageView
+                android:id="@+id/iv_confirm_icon"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="24dp"
+                android:contentDescription="@string/app_name"
+                tools:src="@mipmap/mob_icon_module_slogan" />
+
+            <TextView
+                android:id="@+id/tv_confirm_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/iv_confirm_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#212121"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="疯狂账单" />
+
+            <TextView
+                android:id="@+id/tv_confirm_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_confirm_name"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                android:textColor="#757575"
+                android:textSize="14sp"
+                tools:text="版本: 1.0.0 大小: 10M" />
+
+            <TextView
+                android:id="@+id/tv_confirm_company"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_confirm_info"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                android:ellipsize="end"
+                android:lineSpacingExtra="2dp"
+                android:maxLines="3"
+                android:textColor="#757575"
+                android:textSize="14sp"
+                tools:text="宁夏青藤信息科技有限公司" />
+
+            <LinearLayout
+                android:id="@+id/ll_confirm_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_confirm_company"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp">
+
+                <TextView
+                    android:id="@+id/tv_confirm_agreement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="隐私协议"
+                    android:textColor="#212121"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_confirm_permission"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="应用权限"
+                    android:textColor="#212121"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/bu_confirm_action"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@id/ll_confirm_prompt"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/mob_shape_confirm_action"
+                android:text="立即下载"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_confirm_loading"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/pb_confirm_loading"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:text="正在加载中..."
-            android:textColor="#212121"
-            android:textSize="16sp" />
+            android:layout_centerInParent="true"
+            android:visibility="visible">
+
+            <ProgressBar
+                android:id="@+id/pb_confirm_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:id="@+id/tv_confirm_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pb_confirm_loading"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="正在加载中..."
+                android:textColor="#212121"
+                android:textSize="16sp" />
+        </RelativeLayout>
     </RelativeLayout>
-</RelativeLayout>
+</FrameLayout>

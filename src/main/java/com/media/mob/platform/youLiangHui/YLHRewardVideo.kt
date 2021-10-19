@@ -84,14 +84,6 @@ class YLHRewardVideo : RewardVideoWrapper() {
                     if (mediaRequestParams.slotParams.forceShowDownloadDialog) {
                         rewardVideoAD?.setDownloadConfirmListener(DownloadConfirmHelper.downloadConfirmListener)
                     }
-
-                    if (!callbackSuccess) {
-                        callbackSuccess = true
-
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
-
-                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHRewardVideo))
-                    }
                 }
 
                 /**

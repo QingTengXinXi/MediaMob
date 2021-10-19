@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -35,6 +33,7 @@ class MobConfirmActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.mob_activity_confirm)
 
         url = intent.getStringExtra(CONFIRM_APP_INFO_URL)
@@ -44,21 +43,7 @@ class MobConfirmActivity : AppCompatActivity() {
             return
         }
 
-        initialWindow()
-
         initialView()
-    }
-
-    private fun initialWindow() {
-        window?.decorView?.setPadding(0, 0, 0, 0)
-
-        val layoutParams = window?.attributes
-        layoutParams?.gravity = Gravity.BOTTOM
-
-        layoutParams?.width = WindowManager.LayoutParams.MATCH_PARENT
-        layoutParams?.height = WindowManager.LayoutParams.WRAP_CONTENT
-
-        window?.attributes = layoutParams
     }
 
     private fun initialView() {
@@ -124,8 +109,15 @@ class MobConfirmActivity : AppCompatActivity() {
         val permissions = DownloadConfirmHelper.analysisPermissionList(apkInfo.permissions)
 
         val permission: TextView? = infoView?.findViewById(R.id.tv_confirm_permission)
-        permission?.setOnClickListener {
-            PermissionDialog(this, permissions).show()
+
+        if (permissions.isNullOrEmpty()) {
+            permission?.visibility = View.GONE
+        } else {
+            permission?.visibility = View.VISIBLE
+
+            permission?.setOnClickListener {
+                PermissionDialog(this, permissions).show()
+            }
         }
 
         val confirm: Button? = infoView?.findViewById(R.id.bu_confirm_action)
