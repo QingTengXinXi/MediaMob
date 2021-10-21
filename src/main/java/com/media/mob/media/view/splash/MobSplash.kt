@@ -58,7 +58,7 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
             object : MobRequestResult<IMobView> {
 
                 override fun requestFailed(code: Int, message: String) {
-                    requestFailedListener?.invoke(code, message)
+                    invokeRequestFailedListener(code, message)
                 }
 
                 override fun requestSucceed(result: IMobView) {
@@ -84,10 +84,24 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
                         addView(mobView)
                     }
 
-                    requestSuccessListener?.invoke()
+                    invokeRequestSuccessListener()
                 }
             })
 
         splashLoader.handleRequest(slotParams)
+    }
+
+    /**
+     * 执行开屏广告请求成功回调
+     */
+    private fun invokeRequestSuccessListener() {
+        requestSuccessListener?.invoke()
+    }
+
+    /**
+     * 执行开屏广告请求失败回调
+     */
+    private fun invokeRequestFailedListener(code: Int, message: String) {
+        requestFailedListener?.invoke(code, message)
     }
 }

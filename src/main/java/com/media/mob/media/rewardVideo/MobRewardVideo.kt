@@ -9,8 +9,6 @@ import com.media.mob.dispatch.loader.RewardVideoLoader
 
 class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig) : IRewardVideo {
 
-    private val classTarget = MobRewardVideo::class.java.simpleName
-
     /**
      * 激励视频广告
      */
@@ -113,7 +111,7 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
             MobRequestResult<IRewardVideo> {
 
             override fun requestFailed(code: Int, message: String) {
-                invokeRequestErrorListener(code, message)
+                invokeRequestFailedListener(code, message)
             }
 
             override fun requestSucceed(result: IRewardVideo) {
@@ -152,7 +150,7 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
     /**
      * 执行激励视频广告请求失败回调
      */
-    private fun invokeRequestErrorListener(code: Int, message: String) {
+    private fun invokeRequestFailedListener(code: Int, message: String) {
         requestFailedListener?.invoke(code, message)
     }
 

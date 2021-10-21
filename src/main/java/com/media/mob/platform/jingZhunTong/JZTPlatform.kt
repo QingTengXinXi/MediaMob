@@ -12,6 +12,7 @@ import com.jd.ad.sdk.JadYunSdkConfig
 import com.jd.ad.sdk.widget.JadCustomController
 import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestResult
+import com.media.mob.media.interstitial.IInterstitial
 
 class JZTPlatform(private val id: String) : IPlatform {
 
@@ -37,5 +38,9 @@ class JZTPlatform(private val id: String) : IPlatform {
 
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null, 6005, "京准通暂时不支持激励视频广告"))
+    }
+
+    override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
+
     }
 }

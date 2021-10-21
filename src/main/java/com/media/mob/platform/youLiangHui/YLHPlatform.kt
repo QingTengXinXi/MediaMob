@@ -4,6 +4,7 @@ import com.media.mob.Constants
 import com.media.mob.bean.InitialParams
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.helper.logger.MobLogger
+import com.media.mob.media.interstitial.IInterstitial
 import com.media.mob.media.rewardVideo.IRewardVideo
 import com.media.mob.media.view.IMobView
 import com.media.mob.platform.IPlatform
@@ -27,5 +28,9 @@ class YLHPlatform(private val id: String) : IPlatform {
 
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
         YLHRewardVideo().requestRewardVideo(mediaRequestParams)
+    }
+
+    override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
+
     }
 }

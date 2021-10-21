@@ -2,6 +2,7 @@ package com.media.mob.platform
 
 import com.media.mob.bean.InitialParams
 import com.media.mob.bean.request.MediaRequestParams
+import com.media.mob.media.interstitial.IInterstitial
 import com.media.mob.media.rewardVideo.IRewardVideo
 import com.media.mob.media.view.IMobView
 
@@ -32,4 +33,9 @@ interface IPlatform {
      * 请求激励视频广告
      */
     fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>)
+
+    /**
+     * 请求插屏广告
+     */
+    fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>)
 }
