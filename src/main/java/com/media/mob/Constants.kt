@@ -48,5 +48,5 @@ object Constants {
     /**
      * 支持的广告类型
      */
-    val supportType = arrayListOf("Splash", "RewardVideo", "Material")
+    val supportType = arrayListOf("Splash", "RewardVideo", "Interstitial", "Material")
 }

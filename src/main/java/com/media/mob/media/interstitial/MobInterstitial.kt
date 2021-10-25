@@ -65,11 +65,16 @@ class MobInterstitial(val activity: Activity, val positionConfig: PositionConfig
     var requestFailedListener: ((code: Int, message: String) -> Unit)? = null
 
     override fun show() {
-        
+        interstitial?.show()
     }
 
     override fun destroy() {
-        
+        mediaShowListener = null
+        mediaClickListener = null
+        mediaCloseListener = null
+
+        interstitial?.destroy()
+        interstitial = null
     }
 
     /**

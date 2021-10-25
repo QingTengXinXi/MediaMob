@@ -12,6 +12,7 @@ import com.media.mob.media.view.MobViewWrapper
 import com.media.mob.platform.IPlatform
 import com.bytedance.sdk.openadsdk.TTAdSdk
 import com.bytedance.sdk.openadsdk.TTSplashAd
+import com.media.mob.bean.request.MediaLoadType
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
 import com.media.mob.helper.thread.runMainThread
@@ -48,9 +49,22 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
         val adNative = TTAdSdk.getAdManager().createAdNative(mediaRequestParams.activity)
 
+        val mediaLoadType = when (mediaRequestParams.slotParams.mediaLoadType) {
+            MediaLoadType.LOAD -> {
+                TTAdLoadType.LOAD
+            }
+            MediaLoadType.PRELOAD -> {
+                TTAdLoadType.PRELOAD
+            }
+            else -> {
+                TTAdLoadType.UNKNOWN
+            }
+        }
+
         val builder = AdSlot.Builder()
             .setCodeId(mediaRequestParams.tacticsInfo.thirdSlotId)
             .setImageAcceptedSize(1080, 1920)
+            .setAdLoadType(mediaLoadType)
 
         if (mediaRequestParams.slotParams.splashLimitClickArea) {
             builder.setSplashButtonType(TTAdConstant.SPLASH_BUTTON_TYPE_DOWNLOAD_BAR)
@@ -61,8 +75,6 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
         } else {
             builder.setDownloadType(TTAdConstant.DOWNLOAD_TYPE_NO_POPUP)
         }
-
-        builder.setAdLoadType(TTAdLoadType.LOAD)
 
         val splashListener = object : SplashAdListener {
 
@@ -112,10 +124,10 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
 
                 splashAd = ttSplashAd
 
-                mediaRequestParams.slotParams.splashViewGroup?.removeAllViews()
+                mediaRequestParams.slotParams.splashShowViewGroup?.removeAllViews()
 
                 splashAd?.splashView?.let {
-                    mediaRequestParams.slotParams.splashViewGroup?.addView(it)
+                    mediaRequestParams.slotParams.splashShowViewGroup?.addView(it)
                 }
 
                 mediaRequestParams.mediaPlatformLog.handleRequestSucceed()

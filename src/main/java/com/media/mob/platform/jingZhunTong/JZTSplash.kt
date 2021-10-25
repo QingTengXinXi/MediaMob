@@ -46,7 +46,7 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
 
         val jadParams = JadPlacementParams.Builder()
             .setPlacementId(mediaRequestParams.tacticsInfo.thirdSlotId)
-            .setSize(mediaRequestParams.slotParams.viewAcceptedWidth, mediaRequestParams.slotParams.viewAcceptedHeight)
+            .setSize(mediaRequestParams.slotParams.mediaAcceptedWidth, mediaRequestParams.slotParams.mediaAcceptedHeight)
             .setTolerateTime(mediaRequestParams.slotParams.splashRequestTimeOut / 1000F)
             .setSkipTime(5)
             .setSplashAdClickAreaType(clickType)
@@ -65,12 +65,12 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
              * 开屏广告加载失败回调
              */
             override fun onAdLoadFailed(code: Int, message: String?) {
-                MobLogger.e(classTarget, "京准通开屏广告请求失败: Code=${code}, Message=${message ?: "Unknown"}")
+                MobLogger.e(classTarget, "京准通开屏广告加载失败: Code=${code}, Message=${message ?: "Unknown"}")
 
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
                 mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 60006, "京准通开屏广告请求失败: Code=${code}, Message=${message ?: "Unknown"}")
+                    MediaRequestResult(null, 60006, "京准通开屏广告加载失败: Code=${code}, Message=${message ?: "Unknown"}")
                 )
 
                 destroy()
@@ -94,10 +94,10 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
                     return
                 }
 
-                MobLogger.e(classTarget, "京准通开屏广告成功")
+                MobLogger.e(classTarget, "京准通开屏广告渲染成功")
 
-                mediaRequestParams.slotParams.splashViewGroup?.removeAllViews()
-                mediaRequestParams.slotParams.splashViewGroup?.addView(view)
+                mediaRequestParams.slotParams.splashShowViewGroup?.removeAllViews()
+                mediaRequestParams.slotParams.splashShowViewGroup?.addView(view)
 
                 mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
 

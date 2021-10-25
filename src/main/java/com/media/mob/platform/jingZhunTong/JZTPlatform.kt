@@ -41,6 +41,6 @@ class JZTPlatform(private val id: String) : IPlatform {
     }
 
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
-
+        JZTInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)
     }
 }

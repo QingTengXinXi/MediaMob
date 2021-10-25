@@ -252,6 +252,6 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
 
         mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
-        splashAd?.loadAndShow(mediaRequestParams.slotParams.splashViewGroup)
+        splashAd?.loadAndShow(mediaRequestParams.slotParams.splashShowViewGroup)
     }
 }

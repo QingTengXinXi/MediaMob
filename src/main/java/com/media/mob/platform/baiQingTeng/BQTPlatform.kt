@@ -51,6 +51,6 @@ class BQTPlatform(private val id: String) : IPlatform {
     }
 
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
-
+        BQTInterstitial().requestInterstitial(mediaRequestParams)
     }
 }

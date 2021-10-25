@@ -58,7 +58,7 @@ class CSJPlatform(private val id: String) : IPlatform {
     }
 
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
-
+        CSJInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)
     }
 
     /**

@@ -27,7 +27,7 @@ class YLHRewardVideo : RewardVideoWrapper() {
     /**
      * 优量汇激励视频广告对象
      */
-    private var rewardVideoAD: RewardVideoAD? = null
+    private var rewardVideoAd: RewardVideoAD? = null
 
     /**
      * 是否回调成功
@@ -44,7 +44,7 @@ class YLHRewardVideo : RewardVideoWrapper() {
      */
     override fun show() {
         runMainThread {
-            rewardVideoAD?.showAD()
+            rewardVideoAd?.showAD()
         }
     }
 
@@ -52,7 +52,7 @@ class YLHRewardVideo : RewardVideoWrapper() {
      * 检查激励视频广告是否有效
      */
     override fun checkValidity(): Boolean {
-        return checkRewardVideoValidity(rewardVideoAD)
+        return checkRewardVideoValidity(rewardVideoAd)
     }
 
     /**
@@ -66,11 +66,11 @@ class YLHRewardVideo : RewardVideoWrapper() {
      * 广告销毁
      */
     override fun destroy() {
-        rewardVideoAD = null
+        rewardVideoAd = null
     }
 
     fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
-        rewardVideoAD = RewardVideoAD(
+        rewardVideoAd = RewardVideoAD(
             mediaRequestParams.activity,
             mediaRequestParams.tacticsInfo.thirdSlotId,
             object : RewardVideoADListener {
@@ -82,7 +82,7 @@ class YLHRewardVideo : RewardVideoWrapper() {
                     MobLogger.e(classTarget, "优量汇激励视频广告加载成功")
 
                     if (mediaRequestParams.slotParams.forceShowDownloadDialog) {
-                        rewardVideoAD?.setDownloadConfirmListener(DownloadConfirmHelper.downloadConfirmListener)
+                        rewardVideoAd?.setDownloadConfirmListener(DownloadConfirmHelper.downloadConfirmListener)
                     }
                 }
 
@@ -190,7 +190,7 @@ class YLHRewardVideo : RewardVideoWrapper() {
 
         mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
-        rewardVideoAD?.loadAD()
+        rewardVideoAd?.loadAD()
     }
 
     /**

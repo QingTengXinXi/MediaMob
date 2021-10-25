@@ -14,7 +14,7 @@ class SlotParams {
     /**
      * 开屏广告是否全屏显示
      */
-    var splashFullScreen: Boolean = false
+    var splashFullScreenShow: Boolean = false
 
     /**
      * 开屏广告是否限制点击区域
@@ -22,14 +22,41 @@ class SlotParams {
     var splashLimitClickArea: Boolean = false
 
     /**
+     * 开屏广告使用的ViewGroup
+     */
+    var splashShowViewGroup: ViewGroup? = null
+
+
+
+
+
+
+
+    /**
+     * 插屏广告是否全屏展示（广点通称号广告样式为弹窗和全屏的请求接口有区分）
+     */
+    var interstitialFullScreenShow: Boolean = false
+
+    /**
+     * 插屏广告是否使用新模板渲染（穿山甲插屏广告新、旧模板广告请求接口有区分）
+     */
+    var interstitialNewTemplateExpress: Boolean = true
+
+    /**
+     * 插屏广告是否是在视频场景下使用(百青藤插屏广告视频场景和普通场景请求接口有区分)
+     */
+    var interstitialShowVideoScene: Boolean = false
+
+    /**
+     * 插屏广告在视频场景下具体的展示位置（仅在视频场景下使用百青藤插屏广告有效）
+     */
+    var interstitialUsedScene: InterstitialScene = InterstitialScene.BEFORE_VIDEO_PLAY
+
+
+    /**
      * 强制展示下载合规天窗
      */
     var forceShowDownloadDialog: Boolean = true
-
-    /**
-     * 开屏广告使用的ViewGroup
-     */
-    var splashViewGroup: ViewGroup? = null
 
     /**
      * 激励视频是否静音播放
@@ -44,12 +71,12 @@ class SlotParams {
     /**
      * 广告期望宽度: dp
      */
-    var viewAcceptedWidth: Float = 100F
+    var mediaAcceptedWidth: Float = 100F
 
     /**
      * 广告期望高度: dp
      */
-    var viewAcceptedHeight: Float = 100F
+    var mediaAcceptedHeight: Float = 100F
 
     /**
      * 是否使用TextureView播放视频

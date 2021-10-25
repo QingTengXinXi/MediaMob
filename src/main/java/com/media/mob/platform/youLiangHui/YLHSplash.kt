@@ -195,10 +195,10 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
 
         mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
-        if (mediaRequestParams.slotParams.splashFullScreen) {
-            splashAd?.fetchFullScreenAndShowIn(mediaRequestParams.slotParams.splashViewGroup)
+        if (mediaRequestParams.slotParams.splashFullScreenShow) {
+            splashAd?.fetchFullScreenAndShowIn(mediaRequestParams.slotParams.splashShowViewGroup)
         } else {
-            splashAd?.fetchAndShowIn(mediaRequestParams.slotParams.splashViewGroup)
+            splashAd?.fetchAndShowIn(mediaRequestParams.slotParams.splashShowViewGroup)
         }
     }
 }

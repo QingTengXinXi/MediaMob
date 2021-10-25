@@ -2,7 +2,7 @@ package com.media.mob.platform.chuanShanJia
 
 import android.app.Activity
 import android.content.res.Configuration
-import com.bytedance.sdk.openadsdk.AdSlot.Builder
+import com.bytedance.sdk.openadsdk.AdSlot
 import com.bytedance.sdk.openadsdk.TTAdConstant
 import com.bytedance.sdk.openadsdk.TTAdLoadType
 import com.bytedance.sdk.openadsdk.TTAdNative.RewardVideoAdListener
@@ -90,10 +90,12 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
                 TTAdLoadType.UNKNOWN
             }
         }
-        val builder = Builder().setCodeId(mediaRequestParams.tacticsInfo.thirdSlotId)
+
+        val builder = AdSlot.Builder()
+            .setCodeId(mediaRequestParams.tacticsInfo.thirdSlotId)
             .setExpressViewAcceptedSize(
-                mediaRequestParams.slotParams.viewAcceptedWidth,
-                mediaRequestParams.slotParams.viewAcceptedHeight
+                mediaRequestParams.slotParams.mediaAcceptedWidth,
+                mediaRequestParams.slotParams.mediaAcceptedHeight
             )
             .setOrientation(mediaOrientation)
             .setAdLoadType(mediaLoadType)
@@ -133,7 +135,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "穿山甲激励视频广告请求结果异常，返回的广告对象为Null")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(null, 60005, "穿山甲激励视频广告请求结果为空")
+                        MediaRequestResult(null, 60005, "穿山甲激励视频广告请求结果异常，返回的广告对象为Null")
                     )
 
                     destroy()
@@ -143,7 +145,10 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
 
                 rewardVideoAd = ttRewardedVideoAd
 
-                MobLogger.e(classTarget, "穿山甲激励视频广告展示截止时间: ${rewardVideoAd?.expirationTimestamp} : 当前时间: ${System.currentTimeMillis()}")
+                MobLogger.e(
+                    classTarget,
+                    "穿山甲激励视频广告展示截止时间: ${rewardVideoAd?.expirationTimestamp} : 当前时间: ${System.currentTimeMillis()}"
+                )
 
                 rewardVideoAd?.setShowDownLoadBar(true)
 
@@ -226,7 +231,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
                      * 激励视频跳过视频播放回调
                      */
                     override fun onSkippedVideo() {
-                        MobLogger.e(classTarget, "穿山甲激励视频跳过视频播放回调")
+                        MobLogger.e(classTarget, "穿山甲激励视频广告跳过视频播放回调")
                     }
                 })
             }
@@ -241,7 +246,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
              * 激励视频广告视频本地加载完成的回调
              */
             override fun onRewardVideoCached(rewardVideoAD: TTRewardVideoAd?) {
-                MobLogger.e(classTarget, "穿山甲激励视频广告缓存成功")
+                MobLogger.e(classTarget, "穿山甲激励视频广告物料缓存成功")
 
                 mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@CSJRewardVideo))

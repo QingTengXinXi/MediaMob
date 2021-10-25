@@ -31,6 +31,6 @@ class YLHPlatform(private val id: String) : IPlatform {
     }
 
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
-
+        YLHInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)
     }
 }
