@@ -5,10 +5,7 @@ import com.media.mob.helper.digest
 import java.io.File
 import java.io.OutputStream
 
-class ByteCache constructor(
-    file: File,
-    version: Int = 1
-) {
+class ByteCache constructor(file: File, version: Int = 1) {
 
     private var diskCache: DiskLruCache? = null
 

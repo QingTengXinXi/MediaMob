@@ -23,6 +23,14 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
         }
 
     /**
+     * 广告请求响应时间
+     */
+    override val mediaResponseTime: Long
+        get() {
+            return rewardVideo?.mediaResponseTime ?: -1L
+        }
+
+    /**
      * 展示上报状态
      */
     override val showReportState: Boolean
@@ -56,7 +64,7 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
     /**
      * 广告奖励发放监听
      */
-    override var rewardedListener: ((Boolean) -> Unit)? = null
+    override var mediaRewardedListener: ((Boolean) -> Unit)? = null
 
     /**
      * 请求成功的监听
@@ -76,10 +84,10 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
     }
 
     /**
-     * 检查激励视频广告是否有效
+     * 检查广告是否有效
      */
-    override fun checkValidity(): Boolean {
-        return rewardVideo?.checkValidity() ?: false
+    override fun checkMediaValidity(): Boolean {
+        return rewardVideo != null && rewardVideo?.checkMediaValidity() == true
     }
 
     /**
@@ -93,7 +101,7 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
      * 销毁广告
      */
     override fun destroy() {
-        rewardedListener = null
+        mediaRewardedListener = null
 
         mediaShowListener = null
         mediaClickListener = null
@@ -129,7 +137,7 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
                     invokeMediaCloseListener()
                 }
 
-                rewardVideo?.rewardedListener = { verified ->
+                rewardVideo?.mediaRewardedListener = { verified ->
                     invokeRewardedListener(verified)
                 }
 
@@ -182,6 +190,6 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
      * 执行激励视频广告奖励发放监听
      */
     private fun invokeRewardedListener(reward: Boolean) {
-        rewardedListener?.invoke(reward)
+        mediaRewardedListener?.invoke(reward)
     }
 }

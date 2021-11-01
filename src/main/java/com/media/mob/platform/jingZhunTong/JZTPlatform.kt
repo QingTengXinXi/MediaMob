@@ -42,10 +42,10 @@ class JZTPlatform(private val id: String) : IPlatform {
     }
 
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
-        mediaRequestParams.mediaPlatformLog.handleRequestFailed(86001, "京准通暂时不支持激励视频广告")
+        mediaRequestParams.mediaPlatformLog.handleRequestFailed(85001, "京准通暂时不支持激励视频广告")
 
         mediaRequestParams.mediaRequestResult.invoke(
-            MediaRequestResult(null, 86001, "京准通暂时不支持激励视频广告")
+            MediaRequestResult(null, 85001, "京准通暂时不支持激励视频广告")
         )
     }
 

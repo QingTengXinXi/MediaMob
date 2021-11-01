@@ -5,22 +5,27 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowCompat
 import com.media.mob.R
-import com.media.mob.widget.MobWebView
+import com.media.mob.widget.MediaMobWebView
 
-class MobWebActivity : AppCompatActivity() {
+class MediaMobWebActivity : AppCompatActivity() {
 
     companion object {
         const val WEB_URL = "mob_web_url"
     }
 
-    private var toolbar: Toolbar? = null
-    private var webView: MobWebView? = null
+    private var headerView: RelativeLayout? = null
+
+    private var titleView: TextView? = null
+    private var backView: ImageView? = null
+
+    private var webViewMedia: MediaMobWebView? = null
 
     private var loadingView: RelativeLayout? = null
 
@@ -28,22 +33,20 @@ class MobWebActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mob_activity_web)
 
-        toolbar = findViewById(R.id.web_header)
-        webView = findViewById(R.id.web_container)
-        loadingView = findViewById(R.id.rl_web_loading)
+        headerView = findViewById(R.id.rl_web_header)
 
-        window.statusBarColor = Color.WHITE
+        titleView = findViewById(R.id.tv_web_header_title)
+        backView = findViewById(R.id.iv_web_header_back)
+
+        webViewMedia = findViewById(R.id.web_container)
+        loadingView = findViewById(R.id.rl_web_loading)
 
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
-        setSupportActionBar(toolbar)
 
-        toolbar?.setNavigationOnClickListener {
+        backView?.setOnClickListener {
             finish()
         }
-
-        toolbar?.setBackgroundColor(Color.WHITE)
-        toolbar?.setTitleTextColor(Color.BLACK)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -58,21 +61,21 @@ class MobWebActivity : AppCompatActivity() {
             exception.printStackTrace()
         }
 
-        webView?.onReceivedTitle = {
+        webViewMedia?.onReceivedTitle = {
             title = it
         }
 
-        webView?.onProgressChanged = {
+        webViewMedia?.onProgressChanged = {
 
         }
 
-        webView?.onWebPageStarted = {
+        webViewMedia?.onWebPageStarted = {
             if (loadingView?.visibility != View.VISIBLE) {
                 loadingView?.visibility = View.VISIBLE
             }
         }
 
-        webView?.onWebPageFinished = {
+        webViewMedia?.onWebPageFinished = {
             loadingView?.visibility = View.INVISIBLE
         }
 
@@ -81,18 +84,18 @@ class MobWebActivity : AppCompatActivity() {
         if (url == null) {
             finish()
         } else {
-            webView?.loadUrl(url)
+            webViewMedia?.loadUrl(url)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        webView?.onResume()
+        webViewMedia?.onResume()
     }
 
     override fun onBackPressed() {
-        if (webView?.canGoBack() == true) {
-            webView?.goBack()
+        if (webViewMedia?.canGoBack() == true) {
+            webViewMedia?.goBack()
         } else {
             super.onBackPressed()
         }
@@ -100,11 +103,11 @@ class MobWebActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        webView?.onPause()
+        webViewMedia?.onPause()
     }
 
     override fun onDestroy() {
-        webView?.destroy()
+        webViewMedia?.destroy()
         super.onDestroy()
     }
 }

@@ -18,6 +18,11 @@ interface IMob {
     val clickReportState: Boolean
 
     /**
+     * 广告请求响应时间
+     */
+    val mediaResponseTime: Long
+
+    /**
      * 广告展示监听
      */
     var mediaShowListener: (() -> Unit)?
@@ -33,7 +38,12 @@ interface IMob {
     var mediaCloseListener: (() -> Unit)?
 
     /**
-     * 广告销毁
+     * 检查广告有效性
+     */
+    fun checkMediaValidity(): Boolean
+
+    /**
+     * 销毁广告
      */
     fun destroy()
 }

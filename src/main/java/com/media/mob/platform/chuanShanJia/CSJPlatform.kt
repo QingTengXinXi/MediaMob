@@ -24,6 +24,9 @@ class CSJPlatform(private val id: String) : IPlatform {
 
     private var initialSucceed = false
 
+    /**
+     * 平台初始化方法
+     */
     override fun initial(initialParams: InitialParams) {
         val builder = TTAdConfig.Builder()
             .appId(id)
@@ -54,11 +57,17 @@ class CSJPlatform(private val id: String) : IPlatform {
         }
     }
 
+    /**
+     * 请求开屏广告
+     */
     override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
         if (initialSucceed) {
             CSJSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
         } else {
-            mediaRequestParams.mediaPlatformLog.handleRequestFailed(83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                83000,
+                "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}"
+            )
 
             mediaRequestParams.mediaRequestResult.invoke(
                 MediaRequestResult(null, 83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
@@ -66,11 +75,17 @@ class CSJPlatform(private val id: String) : IPlatform {
         }
     }
 
+    /**
+     * 请求激励视频广告
+     */
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
         if (initialSucceed) {
             CSJRewardVideo(mediaRequestParams.activity).requestRewardVideo(mediaRequestParams)
         } else {
-            mediaRequestParams.mediaPlatformLog.handleRequestFailed(83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                83000,
+                "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}"
+            )
 
             mediaRequestParams.mediaRequestResult.invoke(
                 MediaRequestResult(null, 83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
@@ -78,11 +93,17 @@ class CSJPlatform(private val id: String) : IPlatform {
         }
     }
 
+    /**
+     * 请求插屏广告
+     */
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
         if (initialSucceed) {
             CSJInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)
         } else {
-            mediaRequestParams.mediaPlatformLog.handleRequestFailed(83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                83000,
+                "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}"
+            )
 
             mediaRequestParams.mediaRequestResult.invoke(
                 MediaRequestResult(null, 83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
@@ -98,7 +119,7 @@ class CSJPlatform(private val id: String) : IPlatform {
             return intArrayOf()
         }
 
-        val transformedNetworkTypes = intArrayOf(networkTypes.size)
+        val transformedNetworkTypes = IntArray(networkTypes.size)
         networkTypes.forEachIndexed { index, i ->
             when (i) {
                 InitialParams.NETWORK_STATE_2G -> {

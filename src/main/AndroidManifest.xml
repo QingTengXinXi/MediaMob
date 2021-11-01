@@ -35,14 +35,14 @@
 
         <!-- 聚合广告SDK -->
         <activity
-            android:name=".activity.MobConfirmActivity"
+            android:name=".activity.MediaMobConfirmActivity"
             android:exported="false"
             android:multiprocess="false"
             android:screenOrientation="behind"
             android:theme="@style/mob_dialog_activity" />
 
         <activity
-            android:name=".activity.MobWebActivity"
+            android:name=".activity.MediaMobWebActivity"
             android:exported="false"
             android:multiprocess="false"
             android:screenOrientation="behind"

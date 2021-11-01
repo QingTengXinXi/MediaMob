@@ -31,13 +31,13 @@ object ResourceLoader {
         resourceExecutors.submit {
             val bytes = byteCache.load(url)
             if (bytes != null) {
-                MobLogger.e(classTarget, "从缓存获取资源: $url")
+                MobLogger.v(classTarget, "从缓存获取资源: $url")
                 callback.invoke(bytes)
             } else {
                 NetworkHelper.requestByteArray(url) { result ->
                     if (result?.isNotEmpty() == true) {
                         byteCache.save(url, result)
-                        MobLogger.e(classTarget, "从网络获取资源: $url")
+                        MobLogger.v(classTarget, "从网络获取资源: $url")
                     }
                     callback.invoke(result)
                 }

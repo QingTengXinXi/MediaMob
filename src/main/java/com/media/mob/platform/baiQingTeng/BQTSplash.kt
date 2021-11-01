@@ -1,6 +1,7 @@
 package com.media.mob.platform.baiQingTeng
 
-import android.content.Context
+import android.annotation.SuppressLint
+import android.app.Activity
 import com.baidu.mobads.sdk.api.RequestParameters
 import com.baidu.mobads.sdk.api.SplashAd
 import com.baidu.mobads.sdk.api.SplashInteractionListener
@@ -12,7 +13,8 @@ import com.media.mob.media.view.IMobView
 import com.media.mob.media.view.MobViewWrapper
 import com.media.mob.platform.IPlatform
 
-class BQTSplash(context: Context) : MobViewWrapper(context) {
+@SuppressLint("ViewConstructor")
+class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
 
     private val classTarget = BQTSplash::class.java.simpleName
 
@@ -20,6 +22,11 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_BQT
+
+    /**
+     * 广告请求响应时间
+     */
+    override val mediaResponseTime: Long = -1L
 
     /**
      * 百青藤开屏广告对象
@@ -52,6 +59,13 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
     private var activityLifecycle: ActivityLifecycle? = null
 
     /**
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        return splashAd != null
+    }
+
+    /**
      * 销毁广告对象
      */
     override fun destroy() {
@@ -59,10 +73,12 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
 
         splashAd?.destroy()
         splashAd = null
+
+        activityLifecycle?.unregisterActivityLifecycle(activity)
     }
 
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
-        activityLifecycle = object : ActivityLifecycle(mediaRequestParams.activity) {
+        activityLifecycle = object : ActivityLifecycle(activity) {
             override fun activityResumed() {
                 super.activityResumed()
 
@@ -144,7 +160,7 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                     mediaRequestParams.mediaRequestResult.invoke(
                         MediaRequestResult(
                             null,
-                            60006,
+                            82002,
                             "百青藤开屏广告请求失败: Code=-1, Message=${message ?: "Unknown"}"
                         )
                     )
@@ -164,6 +180,18 @@ class BQTSplash(context: Context) : MobViewWrapper(context) {
                  */
                 override fun onAdCacheFailed() {
                     MobLogger.e(classTarget, "百青藤开屏广告物料缓存失败")
+
+                    mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "百青藤开屏广告物料缓存失败")
+
+                    mediaRequestParams.mediaRequestResult.invoke(
+                        MediaRequestResult(
+                            null,
+                            82003,
+                            "百青藤开屏广告物料缓存失败"
+                        )
+                    )
+
+                    destroy()
                 }
 
                 /**

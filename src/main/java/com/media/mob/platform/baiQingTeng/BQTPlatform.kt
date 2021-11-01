@@ -19,6 +19,9 @@ class BQTPlatform(private val id: String) : IPlatform {
 
     override val name: String = IPlatform.PLATFORM_BQT
 
+    /**
+     * 平台初始化方法
+     */
     override fun initial(initialParams: InitialParams) {
 
         MobLogger.e(classTarget, "初始化百青藤广告SDK: $id")
@@ -42,14 +45,23 @@ class BQTPlatform(private val id: String) : IPlatform {
         }
     }
 
+    /**
+     * 请求开屏广告
+     */
     override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
         BQTSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
     }
 
+    /**
+     * 请求激励视频广告
+     */
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
         BQTRewardVideo().requestRewardVideo(mediaRequestParams)
     }
 
+    /**
+     * 请求插屏广告
+     */
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
         BQTInterstitial().requestInterstitial(mediaRequestParams)
     }

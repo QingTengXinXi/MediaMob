@@ -23,6 +23,14 @@ class MobInterstitial(val activity: Activity, val positionConfig: PositionConfig
         }
 
     /**
+     * 广告请求响应时间
+     */
+    override val mediaResponseTime: Long
+        get() {
+            return interstitial?.mediaResponseTime ?: -1L
+        }
+
+    /**
      * 展示上报状态
      */
     override val showReportState: Boolean
@@ -53,7 +61,6 @@ class MobInterstitial(val activity: Activity, val positionConfig: PositionConfig
      */
     override var mediaCloseListener: (() -> Unit)? = null
 
-
     /**
      * 请求成功的监听
      */
@@ -64,10 +71,23 @@ class MobInterstitial(val activity: Activity, val positionConfig: PositionConfig
      */
     var requestFailedListener: ((code: Int, message: String) -> Unit)? = null
 
+    /**
+     * 展示插屏广告
+     */
     override fun show() {
         interstitial?.show()
     }
 
+    /**
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        return interstitial != null && interstitial?.checkMediaValidity() == true
+    }
+
+    /**
+     * 销毁广告
+     */
     override fun destroy() {
         mediaShowListener = null
         mediaClickListener = null
@@ -122,7 +142,6 @@ class MobInterstitial(val activity: Activity, val positionConfig: PositionConfig
     private fun invokeRequestFailedListener(code: Int, message: String) {
         requestFailedListener?.invoke(code, message)
     }
-
 
     /**
      * 执行插屏广告展示监听

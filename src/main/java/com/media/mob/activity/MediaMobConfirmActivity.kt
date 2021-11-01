@@ -18,9 +18,9 @@ import com.media.mob.helper.thread.runMainThread
 import com.media.mob.network.resource.ResourceLoader
 import com.media.mob.platform.youLiangHui.helper.DownloadConfirmHelper
 import com.media.mob.platform.youLiangHui.helper.bean.ApkInfo
-import com.media.mob.widget.dialog.permission.PermissionDialog
+import com.media.mob.widget.dialog.permission.MediaPermissionDialog
 
-class MobConfirmActivity : AppCompatActivity() {
+class MediaMobConfirmActivity : AppCompatActivity() {
 
     companion object {
         const val CONFIRM_APP_INFO_URL = "mob_confirm_app_info_url"
@@ -100,9 +100,9 @@ class MobConfirmActivity : AppCompatActivity() {
 
         val agreement: TextView? = infoView?.findViewById(R.id.tv_confirm_agreement)
         agreement?.setOnClickListener {
-            val intent = Intent(Constants.application, MobWebActivity::class.java)
+            val intent = Intent(Constants.application, MediaMobWebActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            intent.putExtra(MobWebActivity.WEB_URL, apkInfo.agreement)
+            intent.putExtra(MediaMobWebActivity.WEB_URL, apkInfo.agreement)
             startActivity(intent)
         }
 
@@ -116,7 +116,7 @@ class MobConfirmActivity : AppCompatActivity() {
             permission?.visibility = View.VISIBLE
 
             permission?.setOnClickListener {
-                PermissionDialog(this, permissions).show()
+                MediaPermissionDialog(this, permissions).show()
             }
         }
 

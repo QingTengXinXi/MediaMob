@@ -1,5 +1,6 @@
 package com.media.mob.platform.baiQingTeng
 
+import android.os.SystemClock
 import com.baidu.mobads.sdk.api.AdSize
 import com.baidu.mobads.sdk.api.InterstitialAd
 import com.baidu.mobads.sdk.api.InterstitialAdListener
@@ -18,7 +19,12 @@ class BQTInterstitial : InterstitialWrapper() {
     /**
      * 广告平台名称
      */
-    override val platformName: String = IPlatform.PLATFORM_JZT
+    override val platformName: String = IPlatform.PLATFORM_BQT
+
+    /**
+     * 广告请求响应时间
+     */
+    override var mediaResponseTime: Long = -1L
 
     /**
      * 百青藤插屏广告对象
@@ -42,7 +48,15 @@ class BQTInterstitial : InterstitialWrapper() {
     }
 
     /**
-     * 广告销毁
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        //TODO 检查广告请求有效性，是否请求长时间未使用（请求时间、响应时间）
+        return interstitialAd != null && interstitialAd?.isAdReady == true
+    }
+
+    /**
+     * 销毁广告
      */
     override fun destroy() {
         interstitialAd?.destroy()
@@ -68,6 +82,8 @@ class BQTInterstitial : InterstitialWrapper() {
              */
             override fun onAdReady() {
                 MobLogger.e(classTarget, "百青藤插屏广告渲染成功")
+
+                mediaResponseTime = SystemClock.elapsedRealtime()
 
                 mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTInterstitial))
@@ -121,7 +137,7 @@ class BQTInterstitial : InterstitialWrapper() {
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, message ?: "Unknown")
 
                 mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 60006, "百青藤插屏广告加载失败: Message=${message ?: "Unknown"}")
+                    MediaRequestResult(null, 82002, "百青藤插屏广告加载失败: Message=${message ?: "Unknown"}")
                 )
 
                 destroy()

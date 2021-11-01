@@ -52,6 +52,9 @@ abstract class IMobView(context: Context) : FrameLayout(context), IMob {
         mediaCloseListener?.invoke()
     }
 
+    /**
+     * 销毁广告
+     */
     override fun destroy() {
         this.removeAllViews()
 

@@ -31,6 +31,11 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
     override val platformName: String = IPlatform.PLATFORM_CSJ
 
     /**
+     * 广告请求响应时间
+     */
+    override var mediaResponseTime: Long = -1L
+
+    /**
      * 穿山甲模板渲染插屏广告对象
      */
     private var interstitialExpressAd: TTNativeExpressAd? = null
@@ -57,7 +62,14 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
     }
 
     /**
-     * 广告销毁
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        return true
+    }
+
+    /**
+     * 销毁广告
      */
     override fun destroy() {
         interstitialNewExpressAd = null
@@ -115,6 +127,9 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
         }
     }
 
+    /**
+     * 请求模板渲染插屏
+     */
     private fun requestTemplate(adNative: TTAdNative, adSlot: AdSlot, mediaRequestParams: MediaRequestParams<IInterstitial>) {
         adNative.loadInteractionExpressAd(adSlot, object : NativeExpressAdListener {
             /**
@@ -126,7 +141,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
                 mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 60006, "穿山甲插屏广告请求失败: Code=$code, Message=${message ?: "Unknown"}")
+                    MediaRequestResult(null, 83002, "穿山甲插屏广告请求失败: Code=$code, Message=${message ?: "Unknown"}")
                 )
 
                 destroy()
@@ -142,7 +157,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "穿山甲插屏广告请求结果异常，返回的广告对象列表为Null")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(null, 60005, "穿山甲插屏广告请求结果异常，返回的广告对象列表为Null")
+                        MediaRequestResult(null, 83004, "穿山甲插屏广告请求结果异常，返回的广告对象列表为Null")
                     )
 
                     destroy()
@@ -195,7 +210,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                         mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
                         mediaRequestParams.mediaRequestResult.invoke(
-                            MediaRequestResult(null, 60006, "穿山甲插屏广告渲染失败: Code=${code}, Message=${message ?: "Unknown"}")
+                            MediaRequestResult(null, 83005, "穿山甲插屏广告渲染失败: Code=${code}, Message=${message ?: "Unknown"}")
                         )
 
                         destroy()
@@ -226,6 +241,9 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
         })
     }
 
+    /**
+     * 请求新模板渲染插屏
+     */
     private fun requestNewTemplate(adNative: TTAdNative, adSlot: AdSlot, mediaRequestParams: MediaRequestParams<IInterstitial>) {
         adNative.loadFullScreenVideoAd(adSlot, object : FullScreenVideoAdListener {
 
@@ -238,7 +256,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
                 mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 60006, "穿山甲插屏广告请求失败: Code=$code, Message=${message ?: "Unknown"}")
+                    MediaRequestResult(null, 83002, "穿山甲插屏广告请求失败: Code=$code, Message=${message ?: "Unknown"}")
                 )
 
                 destroy()
@@ -254,7 +272,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "穿山甲插屏广告请求结果异常，返回的广告对象为Null")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(null, 60005, "穿山甲插屏广告请求结果异常，返回的广告对象为Null")
+                        MediaRequestResult(null, 83004, "穿山甲插屏广告请求结果异常，返回的广告对象为Null")
                     )
 
                     destroy()

@@ -33,22 +33,30 @@ class KSPlatform(private val id: String) : IPlatform {
     }
 
     override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
-        KSSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
+        if (initialSucceed) {
+            KSSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
+        } else {
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(86000, "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+
+            mediaRequestParams.mediaRequestResult.invoke(
+                MediaRequestResult(null, 86000, "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            )
+        }
     }
 
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
-        mediaRequestParams.mediaPlatformLog.handleRequestFailed(85001, "快手联盟暂时不支持激励视频广告")
+        mediaRequestParams.mediaPlatformLog.handleRequestFailed(86001, "快手联盟暂时不支持激励视频广告")
 
         mediaRequestParams.mediaRequestResult.invoke(
-            MediaRequestResult(null, 85001, "快手联盟暂时不支持激励视频广告")
+            MediaRequestResult(null, 86001, "快手联盟暂时不支持激励视频广告")
         )
     }
 
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
-        mediaRequestParams.mediaPlatformLog.handleRequestFailed(85001, "快手联盟暂时不支持插屏广告")
+        mediaRequestParams.mediaPlatformLog.handleRequestFailed(86001, "快手联盟暂时不支持插屏广告")
 
         mediaRequestParams.mediaRequestResult.invoke(
-            MediaRequestResult(null, 85001, "快手联盟暂时不支持插屏广告")
+            MediaRequestResult(null, 86001, "快手联盟暂时不支持插屏广告")
         )
     }
 }

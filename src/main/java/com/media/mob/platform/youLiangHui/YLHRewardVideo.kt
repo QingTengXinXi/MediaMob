@@ -25,6 +25,11 @@ class YLHRewardVideo : RewardVideoWrapper() {
     override val platformName: String = IPlatform.PLATFORM_YLH
 
     /**
+     * 广告请求响应时间
+     */
+    override var mediaResponseTime: Long = -1L
+
+    /**
      * 优量汇激励视频广告对象
      */
     private var rewardVideoAd: RewardVideoAD? = null
@@ -49,10 +54,10 @@ class YLHRewardVideo : RewardVideoWrapper() {
     }
 
     /**
-     * 检查激励视频广告是否有效
+     * 检查广告是否有效
      */
-    override fun checkValidity(): Boolean {
-        return checkRewardVideoValidity(rewardVideoAd)
+    override fun checkMediaValidity(): Boolean {
+        return rewardVideoAd != null && checkRewardVideoValidity(rewardVideoAd)
     }
 
     /**
@@ -63,7 +68,7 @@ class YLHRewardVideo : RewardVideoWrapper() {
     }
 
     /**
-     * 广告销毁
+     * 销毁广告
      */
     override fun destroy() {
         rewardVideoAd = null
@@ -74,6 +79,30 @@ class YLHRewardVideo : RewardVideoWrapper() {
             mediaRequestParams.activity,
             mediaRequestParams.tacticsInfo.thirdSlotId,
             object : RewardVideoADListener {
+
+                /**
+                 * 激励视频广告请求失败
+                 */
+                override fun onError(error: AdError?) {
+                    MobLogger.e(
+                        classTarget,
+                        "优量汇激励视频广告请求失败: Code=${error?.errorCode ?: -1}, Message=${error?.errorMsg ?: "Unknown"}"
+                    )
+
+                    mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                        error?.errorCode ?: -1,
+                        error?.errorMsg ?: "Unknown"
+                    )
+
+                    mediaRequestParams.mediaRequestResult.invoke(
+                        MediaRequestResult(
+                            null, 84002,
+                            "优量汇激励视频请求失败: Code=${error?.errorCode ?: -1}, Message=${error?.errorMsg ?: "Unknown"}"
+                        )
+                    )
+
+                    destroy()
+                }
 
                 /**
                  * 激励视频广告加载成功回调
@@ -127,7 +156,7 @@ class YLHRewardVideo : RewardVideoWrapper() {
 
                     rewardVerify = true
 
-                    invokeRewardedListener(true)
+                    invokeMediaRewardedListener(true)
                 }
 
                 /**
@@ -159,30 +188,6 @@ class YLHRewardVideo : RewardVideoWrapper() {
                     MobLogger.e(classTarget, "优量汇激励视频广告关闭")
 
                     invokeMediaCloseListener()
-                }
-
-                /**
-                 * 激励视频广告请求失败
-                 */
-                override fun onError(error: AdError?) {
-                    MobLogger.e(
-                        classTarget,
-                        "优量汇激励视频广告请求失败: Code=${error?.errorCode ?: -1}, Message=${error?.errorMsg ?: "Unknown"}"
-                    )
-
-                    mediaRequestParams.mediaPlatformLog.handleRequestFailed(
-                        error?.errorCode ?: -1,
-                        error?.errorMsg ?: "Unknown"
-                    )
-
-                    mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(
-                            null, 60006,
-                            "优量汇激励视频请求失败: Code=${error?.errorCode ?: -1}, Message=${error?.errorMsg ?: "Unknown"}"
-                        )
-                    )
-
-                    destroy()
                 }
             }, !mediaRequestParams.slotParams.rewardVideoMutePlay
         )

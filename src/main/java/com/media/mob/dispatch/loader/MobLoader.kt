@@ -46,6 +46,8 @@ abstract class MobLoader<T>(
      * 初始化配置信息
      */
     init {
+        MobLogger.e(classTarget, "PositionConfig: $positionConfig")
+
         tacticsConfigQueue.clear()
 
         if (positionConfig.slotConfig.checkParamsValidity()) {
@@ -131,9 +133,7 @@ abstract class MobLoader<T>(
     private fun invokeRequestFailed() {
         mediaRequestLog.handleRequestResult(false)
 
-        mobRequestResult.requestFailed(10000, "广告位策略配置执行完成，无广告平台填充")
-
-        //TODO 上报广告位请求失败
+        mobRequestResult.requestFailed(81001, "广告位策略配置执行完成，无广告平台填充")
     }
 
     /**
@@ -143,8 +143,6 @@ abstract class MobLoader<T>(
         mediaRequestLog.handleRequestResult(true)
 
         mobRequestResult.requestSucceed(result)
-
-        //TODO 上报广告位请求成功
     }
 
     /**

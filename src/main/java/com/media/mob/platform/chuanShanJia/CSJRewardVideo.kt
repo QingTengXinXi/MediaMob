@@ -28,6 +28,11 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
     override val platformName: String = IPlatform.PLATFORM_YLH
 
     /**
+     * 广告请求响应时间
+     */
+    override var mediaResponseTime: Long = -1L
+
+    /**
      * 穿山甲激励视频广告对象
      */
     private var rewardVideoAd: TTRewardVideoAd? = null
@@ -47,10 +52,10 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
     }
 
     /**
-     * 检查激励视频广告是否有效
+     * 检查广告是否有效
      */
-    override fun checkValidity(): Boolean {
-        return checkRewardVideoValidity(rewardVideoAd)
+    override fun checkMediaValidity(): Boolean {
+        return rewardVideoAd != null && checkRewardVideoValidity(rewardVideoAd)
     }
 
     /**
@@ -61,7 +66,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
     }
 
     /**
-     * 广告销毁
+     * 销毁广告
      */
     override fun destroy() {
         rewardVideoAd = null
@@ -119,7 +124,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
                 mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 60006, "穿山甲激励视频广告请求失败: Code=$code, Message=${message ?: "Unknown"}")
+                    MediaRequestResult(null, 83002, "穿山甲激励视频广告请求失败: Code=$code, Message=${message ?: "Unknown"}")
                 )
 
                 destroy()
@@ -135,7 +140,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "穿山甲激励视频广告请求结果异常，返回的广告对象为Null")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(null, 60005, "穿山甲激励视频广告请求结果异常，返回的广告对象为Null")
+                        MediaRequestResult(null, 83004, "穿山甲激励视频广告请求结果异常，返回的广告对象为Null")
                     )
 
                     destroy()
@@ -224,7 +229,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
 
                         this@CSJRewardVideo.rewardVerify = rewardVerify
 
-                        invokeRewardedListener(rewardVerify)
+                        invokeMediaRewardedListener(rewardVerify)
                     }
 
                     /**

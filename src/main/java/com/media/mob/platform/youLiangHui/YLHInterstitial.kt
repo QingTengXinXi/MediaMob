@@ -21,6 +21,11 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
     override val platformName: String = IPlatform.PLATFORM_YLH
 
     /**
+     * 广告请求响应时间
+     */
+    override var mediaResponseTime: Long = -1L
+
+    /**
      * 优量汇插屏广告对象
      */
     private var interstitialAd: UnifiedInterstitialAD? = null
@@ -42,13 +47,23 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
     }
 
     /**
-     * 广告销毁
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        return interstitialAd != null
+    }
+
+    /**
+     * 销毁广告
      */
     override fun destroy() {
         interstitialAd?.destroy()
         interstitialAd = null
     }
 
+    /**
+     * 请求插屏广告
+     */
     fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
         interstitialAd = UnifiedInterstitialAD(
             mediaRequestParams.activity,
@@ -71,7 +86,7 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
 
                     mediaRequestParams.mediaRequestResult.invoke(
                         MediaRequestResult(
-                            null, 60006,
+                            null, 84002,
                             "优量汇插屏广告请求失败: Code=${error?.errorCode ?: -1}, Message=${error?.errorMsg ?: "Unknown"}"
                         )
                     )
@@ -93,7 +108,6 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
                     MobLogger.e(classTarget, "优量汇插屏广告视频素材缓存完毕")
                 }
 
-
                 /**
                  * 插屏广告渲染成功
                  */
@@ -113,7 +127,7 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
 
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "优量汇插屏弹窗广告渲染失败")
 
-                    mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null, 60006, "优量汇插屏弹窗广告渲染失败"))
+                    mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null, 84003, "优量汇插屏弹窗广告渲染失败"))
 
                     destroy()
                 }

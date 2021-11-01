@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.media.mob.R
 import com.media.mob.platform.youLiangHui.helper.bean.Permission
 
-class PermissionHolder(view: View) : RecyclerView.ViewHolder(view) {
+class MediaPermissionHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(permission: Permission) = with(itemView) {
 

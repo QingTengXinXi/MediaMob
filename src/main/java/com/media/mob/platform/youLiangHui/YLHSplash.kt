@@ -1,6 +1,7 @@
 package com.media.mob.platform.youLiangHui
 
-import android.content.Context
+import android.annotation.SuppressLint
+import android.app.Activity
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.lifecycle.ActivityLifecycle
@@ -13,7 +14,8 @@ import com.qq.e.ads.splash.SplashAD
 import com.qq.e.ads.splash.SplashADListener
 import com.qq.e.comm.util.AdError
 
-class YLHSplash(context: Context) : MobViewWrapper(context) {
+@SuppressLint("ViewConstructor")
+class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
 
     private val classTarget = YLHSplash::class.java.simpleName
 
@@ -21,6 +23,11 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_YLH
+
+    /**
+     * 广告请求响应时间
+     */
+    override var mediaResponseTime: Long = -1L
 
     /**
      * 优量汇开屏广告对象
@@ -46,6 +53,24 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
      * Activity生命周期监测
      */
     private var activityLifecycle: ActivityLifecycle? = null
+
+    /**
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        return splashAd != null
+    }
+
+    /**
+     * 销毁广告对象
+     */
+    override fun destroy() {
+        super.destroy()
+
+        splashAd = null
+
+        activityLifecycle?.unregisterActivityLifecycle(activity)
+    }
 
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
         activityLifecycle = object : ActivityLifecycle(mediaRequestParams.activity) {
@@ -91,10 +116,12 @@ class YLHSplash(context: Context) : MobViewWrapper(context) {
 
                     mediaRequestParams.mediaRequestResult.invoke(
                         MediaRequestResult(
-                            null, 60006,
+                            null, 84002,
                             "优量汇开屏广告请求失败: Code=${adError?.errorCode ?: -1}, Message=${adError?.errorMsg ?: "Unknown"}"
                         )
                     )
+
+                    destroy()
                 }
 
                 /**

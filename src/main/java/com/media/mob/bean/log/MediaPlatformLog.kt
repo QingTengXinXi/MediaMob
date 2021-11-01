@@ -89,6 +89,8 @@ class MediaPlatformLog(
     }
 
     override fun toString(): String {
-        return "PlatformLog(thirdAppId='$thirdAppId', thirdSlotId='$thirdSlotId', thirdPlatformName='$thirdPlatformName', thirdRequestResult=$thirdRequestResult, thirdRequestTime=$thirdRequestTime, thirdResponseTime=$thirdResponseTime, thirdFailCode=$thirdFailCode, thirdFailMessage='$thirdFailMessage')"
+        return "MediaPlatformLog(thirdAppId='$thirdAppId', thirdSlotId='$thirdSlotId', thirdSlotType='$thirdSlotType', thirdPlatformName='$thirdPlatformName', thirdRequestResult=$thirdRequestResult, thirdRequestTime=$thirdRequestTime, thirdResponseTime=$thirdResponseTime, thirdFailCode=$thirdFailCode, thirdFailMessage='$thirdFailMessage')"
     }
+
+
 }

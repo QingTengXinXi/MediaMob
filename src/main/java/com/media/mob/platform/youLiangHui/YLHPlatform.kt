@@ -19,12 +19,17 @@ class YLHPlatform(private val id: String) : IPlatform {
 
     private var initialSucceed = false
 
+    /**
+     * 平台初始化方法
+     */
     override fun initial(initialParams: InitialParams) {
         MobLogger.e(classTarget, "初始化优量汇SDK: $id")
-
         initialSucceed = GDTADManager.getInstance().initWith(Constants.application, id)
     }
 
+    /**
+     * 请求开屏广告
+     */
     override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
         if (initialSucceed) {
             YLHSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
@@ -40,6 +45,9 @@ class YLHPlatform(private val id: String) : IPlatform {
         }
     }
 
+    /**
+     * 请求激励视频广告
+     */
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
         if (initialSucceed) {
             YLHRewardVideo().requestRewardVideo(mediaRequestParams)
@@ -55,6 +63,9 @@ class YLHPlatform(private val id: String) : IPlatform {
         }
     }
 
+    /**
+     * 请求插屏广告
+     */
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
         if (initialSucceed) {
             YLHInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)

@@ -6,16 +6,28 @@ import com.media.mob.bean.log.MediaRequestLog
 
 abstract class MobViewWrapper(context: Context) : IMobView(context) {
 
+    /**
+     * 展示上报状态
+     */
     override var showReportState: Boolean = false
 
+    /**
+     * 点击上报状态
+     */
     override var clickReportState: Boolean = false
 
+    /**
+     * 销毁广告
+     */
     override fun destroy() {
         mediaShowListener = null
         mediaClickListener = null
         mediaCloseListener = null
     }
 
+    /**
+     * 上报广告行为事件
+     */
     fun reportMediaActionEvent(event: String, tacticsInfo: TacticsInfo, mediaRequestLog: MediaRequestLog) {
         if (("show" == event && !showReportState) || ("click" == event && !clickReportState)) {
             if ("show" == event) {
@@ -35,6 +47,8 @@ abstract class MobViewWrapper(context: Context) : IMobView(context) {
             params["third_app_id"] = tacticsInfo.thirdAppId
             params["third_slot_id"] = tacticsInfo.thirdSlotId
             params["third_platform_name"] = tacticsInfo.thirdPlatformName
+
+            //TODO 处理广告行为事件上报
         }
     }
 }

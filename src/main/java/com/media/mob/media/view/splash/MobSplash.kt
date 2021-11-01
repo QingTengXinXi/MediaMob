@@ -28,6 +28,14 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
         }
 
     /**
+     * 广告请求响应时间
+     */
+    override val mediaResponseTime: Long
+        get() {
+            return mobView?.mediaResponseTime ?: -1L
+        }
+
+    /**
      * 展示上报状态
      */
     override val showReportState: Boolean
@@ -43,6 +51,16 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
             return mobView?.clickReportState ?: false
         }
 
+    /**
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        return mobView != null && mobView?.checkMediaValidity() == true
+    }
+
+    /**
+     * 销毁广告
+     */
     override fun destroy() {
         super.destroy()
 
@@ -50,6 +68,9 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
         mobView = null
     }
 
+    /**
+     * 请求开屏广告
+     */
     fun requestSplash(slotParams: SlotParams) {
         val splashLoader = SplashLoader(
             activity,

@@ -93,7 +93,6 @@ object MediaMob {
         initialingMob = false
         initialMobFailed = false
 
-        //TODO 回调是否需要等待平台初始化成功后再执行 ？？？
         initialCallback?.invoke(true, "聚合广告平台初始化成功")
     }
 }

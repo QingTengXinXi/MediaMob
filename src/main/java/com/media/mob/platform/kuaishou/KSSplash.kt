@@ -1,6 +1,7 @@
 package com.media.mob.platform.kuaishou
 
-import android.content.Context
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
 import com.kwad.sdk.api.KsAdSDK
@@ -15,7 +16,8 @@ import com.media.mob.media.view.IMobView
 import com.media.mob.media.view.MobViewWrapper
 import com.media.mob.platform.IPlatform
 
-class KSSplash(context: Context) : MobViewWrapper(context) {
+@SuppressLint("ViewConstructor")
+class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
     
     private val classTarget = KSSplash::class.java.simpleName
 
@@ -25,14 +27,28 @@ class KSSplash(context: Context) : MobViewWrapper(context) {
     override val platformName: String = IPlatform.PLATFORM_KS
 
     /**
+     * 广告请求响应时间
+     */
+    override var mediaResponseTime: Long = -1L
+
+    /**
      * 快手联盟开屏广告对象
      */
     private var splashAd: KsSplashScreenAd? = null
-    
+
+    /**
+     * 开屏广告是否点击过
+     */
     private var clicked = false
 
+    /**
+     * 承载开屏广告的Activity是否处于Pause状态
+     */
     private var paused = false
 
+    /**
+     * 是否回调了开屏关闭方法
+     */
     private var closeCallback = false
 
     /**
@@ -45,8 +61,29 @@ class KSSplash(context: Context) : MobViewWrapper(context) {
      */
     private var callbackClose = false
 
+    /**
+     * Activity生命周期监测
+     */
+    private var activityLifecycle: ActivityLifecycle? = null
+
+    /**
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        return splashAd != null
+    }
+
+    /**
+     * 销毁广告对象
+     */
+    override fun destroy() {
+        splashAd = null
+
+        activityLifecycle?.unregisterActivityLifecycle(activity)
+    }
+
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
-        object : ActivityLifecycle(mediaRequestParams.activity) {
+        activityLifecycle = object : ActivityLifecycle(activity) {
             override fun activityResumed() {
                 super.activityResumed()
                 paused = false
@@ -76,7 +113,7 @@ class KSSplash(context: Context) : MobViewWrapper(context) {
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
                 mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 85002, "快手联盟开屏广告请求失败: Code=${code}, Message=${message ?: "Unknown"}")
+                    MediaRequestResult(null, 86002, "快手联盟开屏广告请求失败: Code=${code}, Message=${message ?: "Unknown"}")
                 )
 
                 destroy()
@@ -93,7 +130,7 @@ class KSSplash(context: Context) : MobViewWrapper(context) {
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "快手联盟开屏广告请求结果异常，返回广告对象为Null")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(null, 85003, "快手联盟开屏广告请求结果异常，返回广告对象为Null")
+                        MediaRequestResult(null, 86003, "快手联盟开屏广告请求结果异常，返回广告对象为Null")
                     )
                     return
                 }
@@ -219,15 +256,11 @@ class KSSplash(context: Context) : MobViewWrapper(context) {
                         mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "快手联盟开屏广告展示异常，开屏广告View为Null")
 
                         mediaRequestParams.mediaRequestResult.invoke(
-                            MediaRequestResult(null, 85004, "快手联盟开屏广告请求结果异常，返回广告对象为Null")
+                            MediaRequestResult(null, 86004, "快手联盟开屏广告请求结果异常，返回广告对象为Null")
                         )
                     }
                 }
             }
         })
-    }
-
-    override fun destroy() {
-        splashAd = null
     }
 }

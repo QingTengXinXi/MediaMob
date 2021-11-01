@@ -70,7 +70,9 @@ open class ActivityLifecycle(private val currentActivity: Activity?) {
         currentActivity?.application?.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
     }
 
-    fun unregisterActivityLifecycle() {
-        currentActivity?.application?.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
+    fun unregisterActivityLifecycle(activity: Activity?) {
+        if (activity != null && currentActivity != null && currentActivity == activity) {
+            currentActivity.application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        }
     }
 }

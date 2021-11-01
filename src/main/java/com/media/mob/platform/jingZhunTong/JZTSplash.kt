@@ -22,9 +22,21 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
     override val platformName: String = IPlatform.PLATFORM_JZT
 
     /**
+     * 广告请求响应时间
+     */
+    override var mediaResponseTime: Long = -1L
+
+    /**
      * 京准通开屏广告对象
      */
     private var splashAd: JadSplash? = null
+
+    /**
+     * 检查广告是否有效
+     */
+    override fun checkMediaValidity(): Boolean {
+        return splashAd != null
+    }
 
     /**
      * 销毁广告对象
@@ -70,7 +82,7 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
                 mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 60006, "京准通开屏广告加载失败: Code=${code}, Message=${message ?: "Unknown"}")
+                    MediaRequestResult(null, 85002, "京准通开屏广告加载失败: Code=${code}, Message=${message ?: "Unknown"}")
                 )
 
                 destroy()
@@ -86,7 +98,7 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "京准通开屏广告渲染异常，返回广告View对象为Null")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(null, 60006, "京准通开屏广告渲染异常，返回广告View对象为Null")
+                        MediaRequestResult(null, 85003, "京准通开屏广告渲染异常，返回广告View对象为Null")
                     )
 
                     destroy()
@@ -113,7 +125,7 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
                 mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 60006, "京准通开屏广告渲染失败: Code=${code}, Message=${message ?: "Unknown"}")
+                    MediaRequestResult(null, 85004, "京准通开屏广告渲染失败: Code=${code}, Message=${message ?: "Unknown"}")
                 )
 
                 destroy()

@@ -4,7 +4,7 @@ import android.content.Intent
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.media.mob.Constants
-import com.media.mob.activity.MobConfirmActivity
+import com.media.mob.activity.MediaMobConfirmActivity
 import com.media.mob.helper.logger.MobLogger
 import com.media.mob.network.NetworkHelper
 import com.media.mob.platform.youLiangHui.helper.bean.Permission
@@ -17,18 +17,27 @@ object DownloadConfirmHelper {
 
     private val classTarget = DownloadConfirmHelper::class.java.simpleName
 
+    /**
+     * 应用权限说明
+     */
     private var permissionExplain = HashMap<String, Permission>()
 
+    /**
+     * 下载确认回调
+     */
     var downloadConfirmCallBack: DownloadConfirmCallBack? = null
 
+    /**
+     * 下载确认监听
+     */
     val downloadConfirmListener = DownloadConfirmListener { context, scenes, infoUrl, confirmCallback ->
         MobLogger.e(classTarget, "应用下载发生的场景:$scenes, 应用信息获取地址:$infoUrl")
 
         this.downloadConfirmCallBack = confirmCallback
 
         val intent = Intent()
-        intent.putExtra(MobConfirmActivity.CONFIRM_APP_INFO_URL, "$infoUrl&resType=api")
-        intent.setClass(context, MobConfirmActivity::class.java)
+        intent.putExtra(MediaMobConfirmActivity.CONFIRM_APP_INFO_URL, "$infoUrl&resType=api")
+        intent.setClass(context, MediaMobConfirmActivity::class.java)
         context.startActivity(intent)
     }
 

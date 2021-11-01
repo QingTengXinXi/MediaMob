@@ -26,14 +26,8 @@ class SlotParams {
      */
     var splashShowViewGroup: ViewGroup? = null
 
-
-
-
-
-
-
     /**
-     * 插屏广告是否全屏展示（广点通称号广告样式为弹窗和全屏的请求接口有区分）
+     * 插屏广告是否全屏展示（广点通插屏广告样式为弹窗和全屏的请求接口有区分）
      */
     var interstitialFullScreenShow: Boolean = false
 
@@ -53,8 +47,14 @@ class SlotParams {
     var interstitialUsedScene: InterstitialScene = InterstitialScene.BEFORE_VIDEO_PLAY
 
 
+
+
+
+
+
+
     /**
-     * 强制展示下载合规天窗
+     * 强制展示下载合规弹窗
      */
     var forceShowDownloadDialog: Boolean = true
 

@@ -20,9 +20,9 @@ import java.io.File
 import java.util.Locale
 import java.util.regex.Pattern
 
-class MobWebView : WebView {
+class MediaMobWebView : WebView {
 
-    private val classTarget = MobWebView::class.java.simpleName
+    private val classTarget = MediaMobWebView::class.java.simpleName
 
     var onReceivedTitle: ((String) -> Unit)? = null
 
