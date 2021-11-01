@@ -39,8 +39,9 @@ dependencies {
 
   implementation 'com.jakewharton:disklrucache:2.0.2'
 
+  implementation files('libs/kssdk-ad--3.3.17.aar')
   implementation files('libs/jad_yun_sdk_v1.2.8.aar')
-  implementation files('libs/open_ad_sdk_4.0.0.6.aar')
-  implementation files('libs/GDTSDK.unionNormal.4.420.1290.aar')
+  implementation files('libs/open_ad_sdk_4.0.1.1.aar')
+  implementation files('libs/GDTSDK.unionNormal.4.422.1292.aar')
   implementation files('libs/Baidu_MobAds_SDK-release_v9.16.aar')
 }

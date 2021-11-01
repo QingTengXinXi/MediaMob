@@ -6,7 +6,7 @@ import android.os.Bundle
 
 open class ActivityLifecycle(private val currentActivity: Activity?) {
 
-    val activityLifecycleCallbacks = object : Application.ActivityLifecycleCallbacks {
+    private val activityLifecycleCallbacks = object : Application.ActivityLifecycleCallbacks {
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
             if (currentActivity == activity) {
                 activityCreated()

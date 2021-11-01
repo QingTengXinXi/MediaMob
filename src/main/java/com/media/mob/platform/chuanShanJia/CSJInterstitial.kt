@@ -333,7 +333,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
              * 插屏广告物料缓存成功回调
              */
             override fun onFullScreenVideoCached() {
-
+                MobLogger.e(classTarget, "穿山甲插屏广告物料缓存成功")
             }
 
             /**

@@ -21,7 +21,7 @@ class BQTPlatform(private val id: String) : IPlatform {
 
     override fun initial(initialParams: InitialParams) {
 
-        MobLogger.e(classTarget, "初始化百青藤SDK: $id")
+        MobLogger.e(classTarget, "初始化百青藤广告SDK: $id")
 
         BDAdConfig.Builder()
             .setAppsid(id)

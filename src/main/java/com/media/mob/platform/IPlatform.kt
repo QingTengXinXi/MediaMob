@@ -8,6 +8,7 @@ import com.media.mob.media.view.IMobView
 
 interface IPlatform {
     companion object {
+        const val PLATFORM_KS = "KS"
         const val PLATFORM_BQT = "BQT"
         const val PLATFORM_CSJ = "CSJ"
         const val PLATFORM_JZT = "JZT"

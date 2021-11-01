@@ -10,6 +10,7 @@ import com.media.mob.platform.IPlatform
 import com.media.mob.platform.baiQingTeng.BQTPlatform
 import com.media.mob.platform.chuanShanJia.CSJPlatform
 import com.media.mob.platform.jingZhunTong.JZTPlatform
+import com.media.mob.platform.kuaishou.KSPlatform
 import com.media.mob.platform.youLiangHui.YLHPlatform
 
 @Keep
@@ -63,6 +64,10 @@ object MediaMob {
     ) {
         mobConfig.platformConfig.forEach {
             when (it.platformName) {
+                IPlatform.PLATFORM_KS -> {
+                    Constants.platforms[IPlatform.PLATFORM_KS] = KSPlatform(it.platformAppId)
+                    Constants.platforms[IPlatform.PLATFORM_KS]?.initial(initialParams)
+                }
                 IPlatform.PLATFORM_BQT -> {
                     Constants.platforms[IPlatform.PLATFORM_BQT] = BQTPlatform(it.platformAppId)
                     Constants.platforms[IPlatform.PLATFORM_BQT]?.initial(initialParams)

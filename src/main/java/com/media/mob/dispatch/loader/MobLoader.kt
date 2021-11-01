@@ -61,11 +61,10 @@ abstract class MobLoader<T>(
     fun handleRequest(slotParams: SlotParams) {
         val tacticsInfo = choiceSlotTactics()
 
-        MobLogger.e(classTarget, "获取到的策略信息为: $tacticsInfo")
-
         if (tacticsInfo == null) {
             invokeRequestFailed()
         } else {
+            MobLogger.e(classTarget, "获取到的策略信息为: $tacticsInfo")
             handleSlotTactics(slotParams, tacticsInfo)
         }
     }

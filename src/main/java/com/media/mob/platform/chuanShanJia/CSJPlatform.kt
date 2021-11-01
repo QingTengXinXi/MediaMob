@@ -8,6 +8,7 @@ import com.bytedance.sdk.openadsdk.TTAdSdk.InitCallback
 import com.media.mob.Constants
 import com.media.mob.bean.InitialParams
 import com.media.mob.bean.request.MediaRequestParams
+import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
 import com.media.mob.helper.thread.runMainThread
 import com.media.mob.media.interstitial.IInterstitial
@@ -20,6 +21,8 @@ class CSJPlatform(private val id: String) : IPlatform {
     private val classTarget = CSJPlatform::class.java.simpleName
 
     override val name: String = IPlatform.PLATFORM_CSJ
+
+    private var initialSucceed = false
 
     override fun initial(initialParams: InitialParams) {
         val builder = TTAdConfig.Builder()
@@ -34,31 +37,57 @@ class CSJPlatform(private val id: String) : IPlatform {
             builder.directDownloadNetworkType(*transformationNetworkType(Constants.allowDownloadNetworkType))
         }
 
-        MobLogger.e(classTarget, "初始化穿山甲SDK: $id")
+        MobLogger.e(classTarget, "初始化穿山甲广告SDK: $id")
 
         runMainThread {
             TTAdSdk.init(Constants.application, builder.build(), object : InitCallback {
                 override fun success() {
-                    MobLogger.e(classTarget, "穿山甲SDK初始化成功")
+                    initialSucceed = true
+                    MobLogger.e(classTarget, "穿山甲广告SDK初始化成功")
                 }
 
                 override fun fail(code: Int, message: String?) {
-                    MobLogger.e(classTarget, "穿山甲SDK初始化失败: Code=$code, Message=${message ?: "unknown"}")
+                    initialSucceed = false
+                    MobLogger.e(classTarget, "穿山甲广告SDK初始化失败: Code=$code, Message=${message ?: "unknown"}")
                 }
             })
         }
     }
 
     override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
-        CSJSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
+        if (initialSucceed) {
+            CSJSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
+        } else {
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+
+            mediaRequestParams.mediaRequestResult.invoke(
+                MediaRequestResult(null, 83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            )
+        }
     }
 
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
-        CSJRewardVideo(mediaRequestParams.activity).requestRewardVideo(mediaRequestParams)
+        if (initialSucceed) {
+            CSJRewardVideo(mediaRequestParams.activity).requestRewardVideo(mediaRequestParams)
+        } else {
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+
+            mediaRequestParams.mediaRequestResult.invoke(
+                MediaRequestResult(null, 83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            )
+        }
     }
 
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
-        CSJInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)
+        if (initialSucceed) {
+            CSJInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)
+        } else {
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+
+            mediaRequestParams.mediaRequestResult.invoke(
+                MediaRequestResult(null, 83000, "穿山甲广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            )
+        }
     }
 
     /**
