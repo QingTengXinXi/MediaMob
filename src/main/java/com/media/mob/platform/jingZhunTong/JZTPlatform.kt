@@ -21,6 +21,9 @@ class JZTPlatform(private val id: String) : IPlatform {
 
     override val name: String = IPlatform.PLATFORM_JZT
 
+    /**
+     * 平台初始化方法
+     */
     override fun initial(initialParams: InitialParams) {
         val config = JadYunSdkConfig.Builder()
             .setAppId(id)
@@ -37,10 +40,16 @@ class JZTPlatform(private val id: String) : IPlatform {
         MobLogger.e(classTarget, "初始化京准通广告SDK: $id : ${Thread.currentThread().name}")
     }
 
+    /**
+     * 请求开屏广告
+     */
     override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
         JZTSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
     }
 
+    /**
+     * 请求激励视频广告
+     */
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
         mediaRequestParams.mediaPlatformLog.handleRequestFailed(85001, "京准通暂时不支持激励视频广告")
 
@@ -49,6 +58,9 @@ class JZTPlatform(private val id: String) : IPlatform {
         )
     }
 
+    /**
+     * 请求插屏广告
+     */
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
         JZTInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)
     }

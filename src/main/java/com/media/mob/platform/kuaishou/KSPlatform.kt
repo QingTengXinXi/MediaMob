@@ -20,6 +20,9 @@ class KSPlatform(private val id: String) : IPlatform {
 
     private var initialSucceed = false
 
+    /**
+     * 平台初始化方法
+     */
     override fun initial(initialParams: InitialParams) {
         val config = SdkConfig.Builder()
             .appId(id)
@@ -32,11 +35,17 @@ class KSPlatform(private val id: String) : IPlatform {
         initialSucceed = KsAdSDK.init(Constants.application, config)
     }
 
+    /**
+     * 请求开屏广告
+     */
     override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
         if (initialSucceed) {
             KSSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
         } else {
-            mediaRequestParams.mediaPlatformLog.handleRequestFailed(86000, "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                86000,
+                "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}"
+            )
 
             mediaRequestParams.mediaRequestResult.invoke(
                 MediaRequestResult(null, 86000, "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
@@ -44,19 +53,39 @@ class KSPlatform(private val id: String) : IPlatform {
         }
     }
 
+    /**
+     * 请求激励视频广告
+     */
     override fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
-        mediaRequestParams.mediaPlatformLog.handleRequestFailed(86001, "快手联盟暂时不支持激励视频广告")
+        if (initialSucceed) {
+            KSRewardVideo(mediaRequestParams.activity).requestRewardVideo(mediaRequestParams)
+        } else {
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                86000,
+                "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}"
+            )
 
-        mediaRequestParams.mediaRequestResult.invoke(
-            MediaRequestResult(null, 86001, "快手联盟暂时不支持激励视频广告")
-        )
+            mediaRequestParams.mediaRequestResult.invoke(
+                MediaRequestResult(null, 86000, "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            )
+        }
     }
 
+    /**
+     * 请求插屏广告
+     */
     override fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
-        mediaRequestParams.mediaPlatformLog.handleRequestFailed(86001, "快手联盟暂时不支持插屏广告")
+        if (initialSucceed) {
+            KSInterstitial(mediaRequestParams.activity).requestInterstitial(mediaRequestParams)
+        } else {
+            mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                86000,
+                "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}"
+            )
 
-        mediaRequestParams.mediaRequestResult.invoke(
-            MediaRequestResult(null, 86001, "快手联盟暂时不支持插屏广告")
-        )
+            mediaRequestParams.mediaRequestResult.invoke(
+                MediaRequestResult(null, 86000, "快手联盟广告SDK未初始化: SlotId=${mediaRequestParams.tacticsInfo.thirdSlotId}")
+            )
+        }
     }
 }

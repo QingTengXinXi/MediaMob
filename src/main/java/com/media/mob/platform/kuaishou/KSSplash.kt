@@ -47,11 +47,6 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
     private var paused = false
 
     /**
-     * 是否回调了开屏关闭方法
-     */
-    private var closeCallback = false
-
-    /**
      * 是否回调开屏展示方法
      */
     private var callbackShow = false
@@ -89,8 +84,8 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
                 paused = false
 
                 if (clicked) {
-                    if (!closeCallback) {
-                        closeCallback = true
+                    if (!callbackClose) {
+                        callbackClose = true
                         invokeMediaCloseListener()
                     }
                 }
@@ -106,7 +101,13 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
             .needShowMiniWindow(false)
             .build()
 
+        mediaRequestParams.mediaPlatformLog.insertRequestTime()
+
         KsAdSDK.getLoadManager().loadSplashScreenAd(scene, object : KsLoadManager.SplashScreenAdListener {
+
+            /**
+             * 开屏广告请求失败
+             */
             override fun onError(code: Int, message: String?) {
                 MobLogger.e(classTarget, "快手联盟开屏广告请求失败: Code=${code}, Message=${message ?: "Unknown"}")
 
@@ -119,10 +120,16 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
                 destroy()
             }
 
+            /**
+             * 开屏广告服务端填充广告
+             */
             override fun onRequestResult(number: Int) {
                 MobLogger.e(classTarget, "快手联盟开屏广告请求填充: $number")
             }
 
+            /**
+             * 开屏广告加载成功回调
+             */
             override fun onSplashScreenAdLoad(splashScreenAd: KsSplashScreenAd?) {
                 if (splashScreenAd == null) {
                     MobLogger.e(classTarget, "快手联盟开屏广告请求结果异常，返回广告对象为Null")
@@ -251,8 +258,8 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
                         mediaRequestParams.mediaRequestResult.invoke(
                             MediaRequestResult(this@KSSplash)
                         )
-                    } else {
 
+                    } else {
                         mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "快手联盟开屏广告展示异常，开屏广告View为Null")
 
                         mediaRequestParams.mediaRequestResult.invoke(

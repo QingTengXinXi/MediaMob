@@ -245,6 +245,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
              * 激励视频广告视频本地加载完成的回调
              */
             override fun onRewardVideoCached() {
+                MobLogger.e(classTarget, "穿山甲激励视频广告物料缓存成功")
             }
 
             /**
