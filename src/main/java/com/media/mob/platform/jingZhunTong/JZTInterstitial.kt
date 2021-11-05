@@ -1,10 +1,12 @@
 package com.media.mob.platform.jingZhunTong
 
 import android.app.Activity
+import android.os.SystemClock
 import android.view.View
 import com.jd.ad.sdk.imp.JadListener
 import com.jd.ad.sdk.imp.interstitial.JadInterstitial
 import com.jd.ad.sdk.work.JadPlacementParams
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -42,7 +44,18 @@ class JZTInterstitial(val activity: Activity) : InterstitialWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return interstitialAd != null
+        return interstitialAd != null && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.interstitialCacheTime
     }
 
     /**
@@ -103,8 +116,9 @@ class JZTInterstitial(val activity: Activity) : InterstitialWrapper() {
 
                 MobLogger.e(classTarget, "京准通插屏广告渲染成功")
 
-                mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                mediaResponseTime = SystemClock.elapsedRealtime()
 
+                mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@JZTInterstitial))
             }
 
@@ -162,5 +176,9 @@ class JZTInterstitial(val activity: Activity) : InterstitialWrapper() {
                 invokeMediaCloseListener()
             }
         })
+
+        mediaRequestParams.mediaPlatformLog.insertRequestTime()
+
+        interstitialAd?.loadAd()
     }
 }

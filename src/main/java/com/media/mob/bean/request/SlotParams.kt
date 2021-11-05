@@ -1,6 +1,7 @@
 package com.media.mob.bean.request
 
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 
 class SlotParams {
 
@@ -32,7 +33,7 @@ class SlotParams {
     var interstitialFullScreenShow: Boolean = false
 
     /**
-     * 插屏广告是否使用新模板渲染（穿山甲插屏广告新、旧模板广告请求接口有区分）
+     * 插屏广告是否使用新模板渲染（穿山甲和百青藤的插屏广告新、旧模板广告请求接口有区分）
      */
     var interstitialNewTemplateExpress: Boolean = true
 
@@ -45,6 +46,11 @@ class SlotParams {
      * 插屏广告在视频场景下具体的展示位置（仅在视频场景下使用百青藤插屏广告有效）
      */
     var interstitialUsedScene: InterstitialScene = InterstitialScene.BEFORE_VIDEO_PLAY
+
+    /**
+     * 插屏广告在视频场景下展示的ViewGroup（仅在视频场景下使用百青藤插屏广告有效）
+     */
+    var interstitialShowViewGroup: RelativeLayout? = null
 
 
 

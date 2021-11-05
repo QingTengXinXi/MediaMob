@@ -2,6 +2,7 @@ package com.media.mob.platform.chuanShanJia
 
 import android.app.Activity
 import android.content.res.Configuration
+import android.os.SystemClock
 import android.view.View
 import com.bytedance.sdk.openadsdk.AdSlot
 import com.bytedance.sdk.openadsdk.TTAdConstant
@@ -13,6 +14,7 @@ import com.bytedance.sdk.openadsdk.TTAdSdk
 import com.bytedance.sdk.openadsdk.TTFullScreenVideoAd
 import com.bytedance.sdk.openadsdk.TTFullScreenVideoAd.FullScreenVideoAdInteractionListener
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaLoadType
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
@@ -46,7 +48,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
     private var interstitialNewExpressAd: TTFullScreenVideoAd? = null
 
     /**
-     * 穿山甲插屏广告是否位新插屏
+     * 穿山甲插屏广告是否为新插屏
      */
     private var requestNewTemplateExpress: Boolean = false
 
@@ -65,13 +67,31 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return true
+        return if (requestNewTemplateExpress) {
+            interstitialNewExpressAd != null && System.currentTimeMillis() < interstitialNewExpressAd?.expirationTimestamp ?: 0L && checkMediaCacheTime()
+        } else {
+            interstitialExpressAd != null && checkMediaCacheTime()
+        }
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.interstitialCacheTime
     }
 
     /**
      * 销毁广告
      */
     override fun destroy() {
+        interstitialExpressAd?.destroy()
+        interstitialExpressAd = null
+
         interstitialNewExpressAd = null
     }
 
@@ -179,11 +199,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
 
                         invokeMediaClickListener()
 
-                        reportMediaActionEvent(
-                            "click",
-                            mediaRequestParams.tacticsInfo,
-                            mediaRequestParams.mediaRequestLog
-                        )
+                        reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                     }
 
                     /**
@@ -194,11 +210,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
 
                         invokeMediaShowListener()
 
-                        reportMediaActionEvent(
-                            "show",
-                            mediaRequestParams.tacticsInfo,
-                            mediaRequestParams.mediaRequestLog
-                        )
+                        reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                     }
 
                     /**
@@ -221,6 +233,8 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                      */
                     override fun onRenderSuccess(view: View?, width: Float, height: Float) {
                         MobLogger.e(classTarget, "穿山甲插屏广告渲染成功")
+
+                        mediaResponseTime = SystemClock.elapsedRealtime()
 
                         mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@CSJInterstitial))
@@ -299,11 +313,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
 
                         invokeMediaShowListener()
 
-                        reportMediaActionEvent(
-                            "show",
-                            mediaRequestParams.tacticsInfo,
-                            mediaRequestParams.mediaRequestLog
-                        )
+                        reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                     }
 
                     /**
@@ -314,11 +324,7 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
 
                         invokeMediaClickListener()
 
-                        reportMediaActionEvent(
-                            "click",
-                            mediaRequestParams.tacticsInfo,
-                            mediaRequestParams.mediaRequestLog
-                        )
+                        reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
                     }
 
                     /**
@@ -359,6 +365,8 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
              */
             override fun onFullScreenVideoCached(fullScreenVideoAd: TTFullScreenVideoAd?) {
                 MobLogger.e(classTarget, "穿山甲插屏广告物料缓存成功")
+
+                mediaResponseTime = SystemClock.elapsedRealtime()
 
                 mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@CSJInterstitial))

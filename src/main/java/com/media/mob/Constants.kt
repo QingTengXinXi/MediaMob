@@ -1,6 +1,7 @@
 package com.media.mob
 
 import android.app.Application
+import com.media.mob.bean.MediaConfig
 import com.media.mob.platform.IPlatform
 
 object Constants {
@@ -49,4 +50,9 @@ object Constants {
      * 支持的广告类型
      */
     val supportType = arrayListOf("Splash", "RewardVideo", "Interstitial", "Material")
+
+    /**
+     * 广告全局配置
+     */
+    val mediaConfig: MediaConfig? = null
 }

@@ -2,6 +2,8 @@ package com.media.mob.platform.youLiangHui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.SystemClock
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.lifecycle.ActivityLifecycle
@@ -58,7 +60,18 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return splashAd != null
+        return splashAd != null && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.splashCacheTime
     }
 
     /**
@@ -73,7 +86,7 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
     }
 
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
-        activityLifecycle = object : ActivityLifecycle(mediaRequestParams.activity) {
+        activityLifecycle = object : ActivityLifecycle(activity) {
             override fun activityResumed() {
                 super.activityResumed()
 
@@ -131,8 +144,9 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     if (!callbackSuccess) {
                         callbackSuccess = true
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                        mediaResponseTime = SystemClock.elapsedRealtime()
 
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
                     }
                 }
@@ -144,8 +158,9 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     if (!callbackSuccess) {
                         callbackSuccess = true
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                        mediaResponseTime = SystemClock.elapsedRealtime()
 
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
                     }
 
@@ -159,8 +174,9 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     if (!callbackSuccess) {
                         callbackSuccess = true
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                        mediaResponseTime = SystemClock.elapsedRealtime()
 
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
                     }
 

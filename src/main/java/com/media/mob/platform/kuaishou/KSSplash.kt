@@ -2,12 +2,14 @@ package com.media.mob.platform.kuaishou
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
 import com.kwad.sdk.api.KsAdSDK
 import com.kwad.sdk.api.KsLoadManager
 import com.kwad.sdk.api.KsScene
 import com.kwad.sdk.api.KsSplashScreenAd
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.lifecycle.ActivityLifecycle
@@ -65,16 +67,28 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return splashAd != null
+        return splashAd != null && splashAd?.isAdEnable == true && checkMediaCacheTime()
     }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.splashCacheTime
+    }
+
 
     /**
      * 销毁广告对象
      */
     override fun destroy() {
-        splashAd = null
-
         activityLifecycle?.unregisterActivityLifecycle(activity)
+
+        splashAd = null
     }
 
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
@@ -252,6 +266,8 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
                         )
 
                         mediaRequestParams.slotParams.splashShowViewGroup?.addView(view)
+
+                        mediaResponseTime = SystemClock.elapsedRealtime()
 
                         mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
 

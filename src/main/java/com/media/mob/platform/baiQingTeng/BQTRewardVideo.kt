@@ -1,7 +1,9 @@
 package com.media.mob.platform.baiQingTeng
 
+import android.os.SystemClock
 import com.baidu.mobads.sdk.api.RewardVideoAd
 import com.baidu.mobads.sdk.api.RewardVideoAd.RewardVideoAdListener
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -17,12 +19,12 @@ class BQTRewardVideo : RewardVideoWrapper() {
     /**
      * 广告平台名称
      */
-    override val platformName: String = IPlatform.PLATFORM_YLH
+    override val platformName: String = IPlatform.PLATFORM_BQT
 
     /**
      * 广告请求响应时间
      */
-    override val mediaResponseTime: Long = -1L
+    override var mediaResponseTime: Long = -1L
 
     /**
      * 百青藤激励视频广告对象
@@ -47,7 +49,18 @@ class BQTRewardVideo : RewardVideoWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return rewardVideoAd != null && checkRewardVideoValidity(rewardVideoAd)
+        return rewardVideoAd != null && rewardVideoAd?.isReady == true && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.rewardVideoCacheTime
     }
 
     /**
@@ -98,6 +111,9 @@ class BQTRewardVideo : RewardVideoWrapper() {
                 override fun onVideoDownloadSuccess() {
                     MobLogger.e(classTarget, "百青藤激励视频广告缓存成功")
 
+                    mediaResponseTime = SystemClock.elapsedRealtime()
+
+                    mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                     mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTRewardVideo))
                 }
 
@@ -108,7 +124,6 @@ class BQTRewardVideo : RewardVideoWrapper() {
                     MobLogger.e(classTarget, "百青藤激励视频广告物料缓存失败")
 
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "百青藤激励视频广告物料缓存失败")
-
                     mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null, 82003, "百青藤激励视频广告物料缓存失败"))
 
                     destroy()
@@ -190,12 +205,5 @@ class BQTRewardVideo : RewardVideoWrapper() {
         mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
         rewardVideoAd?.load()
-    }
-
-    /**
-     * 检查激励视频广告是否有效
-     */
-    private fun checkRewardVideoValidity(rewardVideoAD: RewardVideoAd?): Boolean {
-        return rewardVideoAD != null && rewardVideoAD.isReady
     }
 }

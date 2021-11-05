@@ -1,6 +1,8 @@
 package com.media.mob.platform.youLiangHui
 
 import android.app.Activity
+import android.os.SystemClock
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -50,7 +52,18 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return interstitialAd != null
+        return interstitialAd != null && interstitialAd?.isValid == true && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.interstitialCacheTime
     }
 
     /**
@@ -114,8 +127,9 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
                 override fun onRenderSuccess() {
                     MobLogger.e(classTarget, "优量汇插屏广告渲染成功")
 
-                    mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                    mediaResponseTime = SystemClock.elapsedRealtime()
 
+                    mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                     mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHInterstitial))
                 }
 

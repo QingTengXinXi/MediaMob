@@ -1,6 +1,7 @@
 package com.media.mob.platform.chuanShanJia
 
 import android.content.Context
+import android.os.SystemClock
 import android.view.View
 import com.bytedance.sdk.openadsdk.AdSlot
 import com.bytedance.sdk.openadsdk.TTAdConstant
@@ -12,6 +13,7 @@ import com.media.mob.media.view.MobViewWrapper
 import com.media.mob.platform.IPlatform
 import com.bytedance.sdk.openadsdk.TTAdSdk
 import com.bytedance.sdk.openadsdk.TTSplashAd
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaLoadType
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -45,7 +47,18 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return splashAd != null
+        return splashAd != null && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.splashCacheTime
     }
 
     /**
@@ -55,6 +68,8 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
         super.destroy()
 
         splashAd?.setSplashInteractionListener(null)
+        splashAd?.setDownloadListener(null)
+
         splashAd = null
     }
 
@@ -141,6 +156,8 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
                 splashAd?.splashView?.let {
                     mediaRequestParams.slotParams.splashShowViewGroup?.addView(it)
                 }
+
+                mediaResponseTime = SystemClock.elapsedRealtime()
 
                 mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
 

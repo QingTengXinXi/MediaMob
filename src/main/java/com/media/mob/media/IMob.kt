@@ -43,6 +43,11 @@ interface IMob {
     fun checkMediaValidity(): Boolean
 
     /**
+     * 检查广告缓存时间
+     */
+    fun checkMediaCacheTime(): Boolean
+
+    /**
      * 销毁广告
      */
     fun destroy()

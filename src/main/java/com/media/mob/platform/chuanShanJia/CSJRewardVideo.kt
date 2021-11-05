@@ -2,6 +2,7 @@ package com.media.mob.platform.chuanShanJia
 
 import android.app.Activity
 import android.content.res.Configuration
+import android.os.SystemClock
 import com.bytedance.sdk.openadsdk.AdSlot
 import com.bytedance.sdk.openadsdk.TTAdConstant
 import com.bytedance.sdk.openadsdk.TTAdLoadType
@@ -9,6 +10,7 @@ import com.bytedance.sdk.openadsdk.TTAdNative.RewardVideoAdListener
 import com.bytedance.sdk.openadsdk.TTAdSdk
 import com.bytedance.sdk.openadsdk.TTRewardVideoAd
 import com.bytedance.sdk.openadsdk.TTRewardVideoAd.RewardAdInteractionListener
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaLoadType
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
@@ -25,7 +27,7 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
     /**
      * 广告平台名称
      */
-    override val platformName: String = IPlatform.PLATFORM_YLH
+    override val platformName: String = IPlatform.PLATFORM_CSJ
 
     /**
      * 广告请求响应时间
@@ -55,7 +57,18 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return rewardVideoAd != null && checkRewardVideoValidity(rewardVideoAd)
+        return rewardVideoAd != null && System.currentTimeMillis() < rewardVideoAd?.expirationTimestamp ?: 0L && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.rewardVideoCacheTime
     }
 
     /**
@@ -254,16 +267,11 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
             override fun onRewardVideoCached(rewardVideoAD: TTRewardVideoAd?) {
                 MobLogger.e(classTarget, "穿山甲激励视频广告物料缓存成功")
 
+                mediaResponseTime = SystemClock.elapsedRealtime()
+
                 mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@CSJRewardVideo))
             }
         })
-    }
-
-    /**
-     * 检查激励视频广告是否有效
-     */
-    private fun checkRewardVideoValidity(rewardVideoAD: TTRewardVideoAd?): Boolean {
-        return rewardVideoAD != null && System.currentTimeMillis() < rewardVideoAD.expirationTimestamp
     }
 }

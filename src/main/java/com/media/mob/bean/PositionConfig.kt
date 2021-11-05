@@ -16,11 +16,13 @@ class PositionConfig(
      */
     @SerializedName("position_name")
     var positionName: String,
+
     /**
      * 广告位是否开启预加载
      */
     @SerializedName("position_preload_state")
     val positionPreloadState: Boolean = false,
+
     /**
      * 广告位配置信息
      */

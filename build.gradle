@@ -43,5 +43,5 @@ dependencies {
   implementation files('libs/jad_yun_sdk_v1.2.8.aar')
   implementation files('libs/open_ad_sdk_4.0.1.1.aar')
   implementation files('libs/GDTSDK.unionNormal.4.422.1292.aar')
-  implementation files('libs/Baidu_MobAds_SDK-release_v9.16.aar')
+  implementation files('libs/Baidu_MobAds_SDK-release_v9.173.aar')
 }

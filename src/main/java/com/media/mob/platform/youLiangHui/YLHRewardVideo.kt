@@ -1,6 +1,7 @@
 package com.media.mob.platform.youLiangHui
 
 import android.os.SystemClock
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -35,11 +36,6 @@ class YLHRewardVideo : RewardVideoWrapper() {
     private var rewardVideoAd: RewardVideoAD? = null
 
     /**
-     * 是否回调成功
-     */
-    private var callbackSuccess = false
-
-    /**
      * 激励视频是否下发奖励
      */
     private var rewardVerify: Boolean = false
@@ -57,7 +53,18 @@ class YLHRewardVideo : RewardVideoWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return rewardVideoAd != null && checkRewardVideoValidity(rewardVideoAd)
+        return rewardVideoAd != null && checkRewardVideoValidity(rewardVideoAd) && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.rewardVideoCacheTime
     }
 
     /**
@@ -121,13 +128,10 @@ class YLHRewardVideo : RewardVideoWrapper() {
                 override fun onVideoCached() {
                     MobLogger.e(classTarget, "优量汇激励视频广告素材缓存成功")
 
-                    if (!callbackSuccess) {
-                        callbackSuccess = true
+                    mediaResponseTime = SystemClock.elapsedRealtime()
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
-
-                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHRewardVideo))
-                    }
+                    mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                    mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHRewardVideo))
                 }
 
                 /**
@@ -175,10 +179,6 @@ class YLHRewardVideo : RewardVideoWrapper() {
                  */
                 override fun onVideoComplete() {
                     MobLogger.e(classTarget, "优量汇激励视频广告播放完成")
-
-                    if (!rewardVerify) {
-                        rewardVerify = true
-                    }
                 }
 
                 /**
@@ -206,6 +206,6 @@ class YLHRewardVideo : RewardVideoWrapper() {
             return false
         }
 
-        return (rewardVideoAD.checkValidity() == VALID || rewardVideoAD.checkValidity() == NONE_CACHE) && (SystemClock.elapsedRealtime() < (rewardVideoAD.expireTimestamp - 1000))
+        return (rewardVideoAD.checkValidity() == VALID || rewardVideoAD.checkValidity() == NONE_CACHE) && (SystemClock.elapsedRealtime() < (rewardVideoAD.expireTimestamp - 500))
     }
 }

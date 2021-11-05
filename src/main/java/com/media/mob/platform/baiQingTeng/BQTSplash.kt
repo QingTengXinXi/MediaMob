@@ -2,9 +2,11 @@ package com.media.mob.platform.baiQingTeng
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.SystemClock
 import com.baidu.mobads.sdk.api.RequestParameters
 import com.baidu.mobads.sdk.api.SplashAd
 import com.baidu.mobads.sdk.api.SplashInteractionListener
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.lifecycle.ActivityLifecycle
@@ -26,7 +28,7 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
     /**
      * 广告请求响应时间
      */
-    override val mediaResponseTime: Long = -1L
+    override var mediaResponseTime: Long = -1L
 
     /**
      * 百青藤开屏广告对象
@@ -62,7 +64,18 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return splashAd != null
+        return splashAd != null && splashAd?.isReady == true && checkMediaValidity()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.splashCacheTime
     }
 
     /**
@@ -71,10 +84,10 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
     override fun destroy() {
         super.destroy()
 
+        activityLifecycle?.unregisterActivityLifecycle(activity)
+
         splashAd?.destroy()
         splashAd = null
-
-        activityLifecycle?.unregisterActivityLifecycle(activity)
     }
 
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
@@ -143,8 +156,9 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     if (!callbackSuccess) {
                         callbackSuccess = true
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                        mediaResponseTime = SystemClock.elapsedRealtime()
 
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTSplash))
                     }
                 }
@@ -158,11 +172,7 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, message ?: "Unknown")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(
-                            null,
-                            82002,
-                            "百青藤开屏广告请求失败: Code=-1, Message=${message ?: "Unknown"}"
-                        )
+                        MediaRequestResult(null, 82002, "百青藤开屏广告请求失败: Message=${message ?: "Unknown"}")
                     )
 
                     destroy()
@@ -184,11 +194,7 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "百青藤开屏广告物料缓存失败")
 
                     mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(
-                            null,
-                            82003,
-                            "百青藤开屏广告物料缓存失败"
-                        )
+                        MediaRequestResult(null, 82003, "百青藤开屏广告物料缓存失败")
                     )
 
                     destroy()
@@ -201,8 +207,9 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     if (!callbackSuccess) {
                         callbackSuccess = true
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                        mediaResponseTime = SystemClock.elapsedRealtime()
 
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTSplash))
                     }
 
@@ -220,8 +227,9 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     if (!callbackSuccess) {
                         callbackSuccess = true
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                        mediaResponseTime = SystemClock.elapsedRealtime()
 
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                         mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTSplash))
                     }
 

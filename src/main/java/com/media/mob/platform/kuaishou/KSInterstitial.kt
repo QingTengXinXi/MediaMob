@@ -1,11 +1,13 @@
 package com.media.mob.platform.kuaishou
 
 import android.app.Activity
+import android.os.SystemClock
 import com.kwad.sdk.api.KsAdSDK
 import com.kwad.sdk.api.KsInterstitialAd
 import com.kwad.sdk.api.KsLoadManager
 import com.kwad.sdk.api.KsScene
 import com.kwad.sdk.api.KsVideoPlayConfig
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -20,7 +22,7 @@ class KSInterstitial(val activity: Activity) : InterstitialWrapper() {
     /**
      * 广告平台名称
      */
-    override val platformName: String = IPlatform.PLATFORM_JZT
+    override val platformName: String = IPlatform.PLATFORM_KS
 
     /**
      * 广告请求响应时间
@@ -53,7 +55,18 @@ class KSInterstitial(val activity: Activity) : InterstitialWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return interstitialAd != null
+        return interstitialAd != null && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.interstitialCacheTime
     }
 
     /**
@@ -65,6 +78,8 @@ class KSInterstitial(val activity: Activity) : InterstitialWrapper() {
 
     fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
         val scene = KsScene.Builder(mediaRequestParams.tacticsInfo.thirdSlotId.toLong()).build()
+
+        mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
         KsAdSDK.getLoadManager().loadInterstitialAd(scene, object : KsLoadManager.InterstitialAdListener {
             /**
@@ -189,6 +204,8 @@ class KSInterstitial(val activity: Activity) : InterstitialWrapper() {
                         MobLogger.e(classTarget, "快手联盟插屏广告跳过")
                     }
                 })
+
+                mediaResponseTime = SystemClock.elapsedRealtime()
 
                 mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@KSInterstitial))

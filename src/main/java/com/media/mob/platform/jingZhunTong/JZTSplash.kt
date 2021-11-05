@@ -1,10 +1,12 @@
 package com.media.mob.platform.jingZhunTong
 
 import android.content.Context
+import android.os.SystemClock
 import android.view.View
 import com.jd.ad.sdk.imp.JadListener
 import com.jd.ad.sdk.imp.splash.JadSplash
 import com.jd.ad.sdk.work.JadPlacementParams
+import com.media.mob.Constants
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -35,7 +37,18 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return splashAd != null
+        return splashAd != null && checkMediaCacheTime()
+    }
+
+    /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTime(): Boolean {
+        if (Constants.mediaConfig == null) {
+            return true
+        }
+
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.splashCacheTime
     }
 
     /**
@@ -111,8 +124,9 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
                 mediaRequestParams.slotParams.splashShowViewGroup?.removeAllViews()
                 mediaRequestParams.slotParams.splashShowViewGroup?.addView(view)
 
-                mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                mediaResponseTime = SystemClock.elapsedRealtime()
 
+                mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
                 mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@JZTSplash))
             }
 
