@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.ViewGroup
 import com.media.mob.bean.PositionConfig
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.log.MediaRequestLog
 import com.media.mob.bean.request.SlotParams
 import com.media.mob.dispatch.MobRequestResult
 import com.media.mob.dispatch.loader.SplashLoader
+import com.media.mob.dispatch.loader.helper.MobMediaCacheHelper
 import com.media.mob.media.view.IMobView
 import com.media.mob.platform.IPlatform
 
@@ -28,6 +30,14 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
         }
 
     /**
+     * 广告策略信息
+     */
+    override val tacticsInfo: TacticsInfo?
+        get() {
+            return mobView?.tacticsInfo
+        }
+
+    /**
      * 广告请求响应时间
      */
     override val mediaResponseTime: Long
@@ -36,19 +46,19 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
         }
 
     /**
-     * 展示上报状态
+     * 展示状态
      */
-    override val showReportState: Boolean
+    override val showState: Boolean
         get() {
-            return mobView?.showReportState ?: false
+            return mobView?.showState ?: false
         }
 
     /**
-     * 点击上报状态
+     * 点击状态
      */
-    override val clickReportState: Boolean
+    override val clickState: Boolean
         get() {
-            return mobView?.clickReportState ?: false
+            return mobView?.clickState ?: false
         }
 
     /**
@@ -59,13 +69,30 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
     }
 
     /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTimeout(): Boolean {
+        return mobView != null && mobView?.checkMediaCacheTimeout() == true
+    }
+
+    /**
      * 销毁广告
      */
     override fun destroy() {
         super.destroy()
 
-        mobView?.destroy()
-        mobView = null
+        if (mobView != null) {
+            if (mobView?.checkMediaValidity() == true) {
+                mobView?.let {
+                    it.tacticsInfo?.let { tacticsInfo ->
+                        MobMediaCacheHelper.insertSplashMobMediaCache(tacticsInfo, it)
+                    }
+                }
+            } else {
+                mobView?.destroy()
+                mobView = null
+            }
+        }
     }
 
     /**

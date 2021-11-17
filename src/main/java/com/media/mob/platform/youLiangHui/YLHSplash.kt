@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.SystemClock
 import com.media.mob.Constants
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.lifecycle.ActivityLifecycle
@@ -25,6 +26,11 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_YLH
+
+    /**
+     * 广告策略信息
+     */
+    override var tacticsInfo: TacticsInfo? = null
 
     /**
      * 广告请求响应时间
@@ -60,18 +66,18 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return splashAd != null && checkMediaCacheTime()
+        return splashAd != null && !showState && !checkMediaCacheTimeout()
     }
 
     /**
      * 检查广告缓存时间
      */
-    override fun checkMediaCacheTime(): Boolean {
+    override fun checkMediaCacheTimeout(): Boolean {
         if (Constants.mediaConfig == null) {
-            return true
+            return false
         }
 
-        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.splashCacheTime
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.splashCacheTime
     }
 
     /**
@@ -108,6 +114,8 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
                 MobLogger.e(classTarget, "优量汇开屏广告Activity进入Pause状态: $clickedState : $activityPaused")
             }
         }
+
+        this.tacticsInfo = mediaRequestParams.tacticsInfo
 
         splashAd = SplashAD(
             mediaRequestParams.activity,

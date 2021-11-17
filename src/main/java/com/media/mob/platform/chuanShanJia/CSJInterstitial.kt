@@ -15,6 +15,7 @@ import com.bytedance.sdk.openadsdk.TTFullScreenVideoAd
 import com.bytedance.sdk.openadsdk.TTFullScreenVideoAd.FullScreenVideoAdInteractionListener
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd
 import com.media.mob.Constants
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaLoadType
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
@@ -23,7 +24,7 @@ import com.media.mob.media.interstitial.IInterstitial
 import com.media.mob.media.interstitial.InterstitialWrapper
 import com.media.mob.platform.IPlatform
 
-class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
+class CSJInterstitial(val activity: Activity) : InterstitialWrapper() {
 
     private val classTarget = CSJInterstitial::class.java.simpleName
 
@@ -31,6 +32,11 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_CSJ
+
+    /**
+     * 广告策略信息
+     */
+    override var tacticsInfo: TacticsInfo? = null
 
     /**
      * 广告请求响应时间
@@ -68,21 +74,21 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
      */
     override fun checkMediaValidity(): Boolean {
         return if (requestNewTemplateExpress) {
-            interstitialNewExpressAd != null && System.currentTimeMillis() < interstitialNewExpressAd?.expirationTimestamp ?: 0L && checkMediaCacheTime()
+            interstitialNewExpressAd != null && System.currentTimeMillis() < interstitialNewExpressAd?.expirationTimestamp ?: 0L && !showState && !checkMediaCacheTimeout()
         } else {
-            interstitialExpressAd != null && checkMediaCacheTime()
+            interstitialExpressAd != null && !showState && !checkMediaCacheTimeout()
         }
     }
 
     /**
      * 检查广告缓存时间
      */
-    override fun checkMediaCacheTime(): Boolean {
+    override fun checkMediaCacheTimeout(): Boolean {
         if (Constants.mediaConfig == null) {
-            return true
+            return false
         }
 
-        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.interstitialCacheTime
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.interstitialCacheTime
     }
 
     /**
@@ -96,6 +102,8 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
     }
 
     fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
+        this.tacticsInfo = mediaRequestParams.tacticsInfo
+
         val adNative = TTAdSdk.getAdManager().createAdNative(mediaRequestParams.activity)
 
         val mediaOrientation = when (mediaRequestParams.activity.resources.configuration.orientation) {
@@ -150,7 +158,11 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
     /**
      * 请求模板渲染插屏
      */
-    private fun requestTemplate(adNative: TTAdNative, adSlot: AdSlot, mediaRequestParams: MediaRequestParams<IInterstitial>) {
+    private fun requestTemplate(
+        adNative: TTAdNative,
+        adSlot: AdSlot,
+        mediaRequestParams: MediaRequestParams<IInterstitial>,
+    ) {
         adNative.loadInteractionExpressAd(adSlot, object : NativeExpressAdListener {
             /**
              * 插屏广告请求失败回调
@@ -160,9 +172,9 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
 
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
-                mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 83002, "穿山甲插屏广告请求失败: Code=$code, Message=${message ?: "Unknown"}")
-                )
+                mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null,
+                    83002,
+                    "穿山甲插屏广告请求失败: Code=$code, Message=${message ?: "Unknown"}"))
 
                 destroy()
             }
@@ -176,9 +188,9 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
 
                     mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "穿山甲插屏广告请求结果异常，返回的广告对象列表为Null")
 
-                    mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(null, 83004, "穿山甲插屏广告请求结果异常，返回的广告对象列表为Null")
-                    )
+                    mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null,
+                        83004,
+                        "穿山甲插屏广告请求结果异常，返回的广告对象列表为Null"))
 
                     destroy()
 
@@ -197,9 +209,11 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                     override fun onAdClicked(view: View?, type: Int) {
                         MobLogger.e(classTarget, "穿山甲插屏广告点击")
 
-                        invokeMediaClickListener()
+                        reportMediaActionEvent("click",
+                            mediaRequestParams.tacticsInfo,
+                            mediaRequestParams.mediaRequestLog)
 
-                        reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+                        invokeMediaClickListener()
                     }
 
                     /**
@@ -208,9 +222,11 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                     override fun onAdShow(view: View?, type: Int) {
                         MobLogger.e(classTarget, "穿山甲插屏广告展示")
 
-                        invokeMediaShowListener()
+                        reportMediaActionEvent("show",
+                            mediaRequestParams.tacticsInfo,
+                            mediaRequestParams.mediaRequestLog)
 
-                        reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+                        invokeMediaShowListener()
                     }
 
                     /**
@@ -221,9 +237,9 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
 
                         mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
-                        mediaRequestParams.mediaRequestResult.invoke(
-                            MediaRequestResult(null, 83005, "穿山甲插屏广告渲染失败: Code=${code}, Message=${message ?: "Unknown"}")
-                        )
+                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null,
+                            83005,
+                            "穿山甲插屏广告渲染失败: Code=${code}, Message=${message ?: "Unknown"}"))
 
                         destroy()
                     }
@@ -258,7 +274,11 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
     /**
      * 请求新模板渲染插屏
      */
-    private fun requestNewTemplate(adNative: TTAdNative, adSlot: AdSlot, mediaRequestParams: MediaRequestParams<IInterstitial>) {
+    private fun requestNewTemplate(
+        adNative: TTAdNative,
+        adSlot: AdSlot,
+        mediaRequestParams: MediaRequestParams<IInterstitial>,
+    ) {
         adNative.loadFullScreenVideoAd(adSlot, object : FullScreenVideoAdListener {
 
             /**
@@ -296,14 +316,13 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
 
                 interstitialNewExpressAd = fullscreenVideoAd
 
-                MobLogger.e(
-                    classTarget,
-                    "穿山甲插屏广告展示截止时间: ${interstitialNewExpressAd?.expirationTimestamp} : 当前时间: ${System.currentTimeMillis()}"
-                )
+                MobLogger.e(classTarget,
+                    "穿山甲插屏广告展示截止时间: ${interstitialNewExpressAd?.expirationTimestamp} : 当前时间: ${System.currentTimeMillis()}")
 
                 interstitialNewExpressAd?.setShowDownLoadBar(true)
 
-                interstitialNewExpressAd?.setFullScreenVideoAdInteractionListener(object : FullScreenVideoAdInteractionListener {
+                interstitialNewExpressAd?.setFullScreenVideoAdInteractionListener(object :
+                    FullScreenVideoAdInteractionListener {
 
                     /**
                      * 插屏广告展示回调
@@ -311,9 +330,11 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                     override fun onAdShow() {
                         MobLogger.e(classTarget, "穿山甲插屏广告展示")
 
-                        invokeMediaShowListener()
+                        reportMediaActionEvent("show",
+                            mediaRequestParams.tacticsInfo,
+                            mediaRequestParams.mediaRequestLog)
 
-                        reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+                        invokeMediaShowListener()
                     }
 
                     /**
@@ -322,9 +343,11 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                     override fun onAdVideoBarClick() {
                         MobLogger.e(classTarget, "穿山甲插屏广告点击")
 
-                        invokeMediaClickListener()
+                        reportMediaActionEvent("click",
+                            mediaRequestParams.tacticsInfo,
+                            mediaRequestParams.mediaRequestLog)
 
-                        reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+                        invokeMediaClickListener()
                     }
 
                     /**
@@ -350,7 +373,6 @@ class CSJInterstitial(val activity: Activity): InterstitialWrapper() {
                         MobLogger.e(classTarget, "穿山甲插屏广告跳过视频播放回调")
                     }
                 })
-
             }
 
             /**

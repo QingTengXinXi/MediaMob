@@ -7,9 +7,8 @@ import com.kwad.sdk.api.KsLoadManager
 import com.kwad.sdk.api.KsRewardVideoAd
 import com.kwad.sdk.api.KsRewardVideoAd.RewardAdInteractionListener
 import com.kwad.sdk.api.KsScene
-import com.kwad.sdk.api.KsVideoPlayConfig
-import com.kwad.sdk.api.core.KsAdSdkApi
 import com.media.mob.Constants
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -17,13 +16,6 @@ import com.media.mob.helper.thread.runMainThread
 import com.media.mob.media.rewardVideo.IRewardVideo
 import com.media.mob.media.rewardVideo.RewardVideoWrapper
 import com.media.mob.platform.IPlatform
-import com.media.mob.platform.youLiangHui.YLHRewardVideo
-import com.media.mob.platform.youLiangHui.helper.DownloadConfirmHelper
-import com.qq.e.ads.rewardvideo.RewardVideoAD
-import com.qq.e.ads.rewardvideo.RewardVideoADListener
-import com.qq.e.comm.util.AdError
-import com.qq.e.comm.util.VideoAdValidity.NONE_CACHE
-import com.qq.e.comm.util.VideoAdValidity.VALID
 
 class KSRewardVideo(private val activity: Activity) : RewardVideoWrapper() {
 
@@ -33,6 +25,11 @@ class KSRewardVideo(private val activity: Activity) : RewardVideoWrapper() {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_KS
+
+    /**
+     * 广告策略信息
+     */
+    override var tacticsInfo: TacticsInfo? = null
 
     /**
      * 广告请求响应时间
@@ -62,18 +59,18 @@ class KSRewardVideo(private val activity: Activity) : RewardVideoWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return rewardVideoAd != null && rewardVideoAd?.isAdEnable == true && checkMediaCacheTime()
+        return rewardVideoAd != null && rewardVideoAd?.isAdEnable == true && !showState && !checkMediaCacheTimeout()
     }
 
     /**
      * 检查广告缓存时间
      */
-    override fun checkMediaCacheTime(): Boolean {
+    override fun checkMediaCacheTimeout(): Boolean {
         if (Constants.mediaConfig == null) {
-            return true
+            return false
         }
 
-        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.rewardVideoCacheTime
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.rewardVideoCacheTime
     }
 
     /**
@@ -91,6 +88,8 @@ class KSRewardVideo(private val activity: Activity) : RewardVideoWrapper() {
     }
 
     fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
+        this.tacticsInfo = mediaRequestParams.tacticsInfo
+
         val scene = KsScene.Builder(mediaRequestParams.tacticsInfo.thirdSlotId.toLong())
             .build()
 
@@ -145,13 +144,13 @@ class KSRewardVideo(private val activity: Activity) : RewardVideoWrapper() {
                     override fun onAdClicked() {
                         MobLogger.e(classTarget, "快手联盟激励视频广告点击")
 
-                        invokeMediaClickListener()
-
                         reportMediaActionEvent(
                             "click",
                             mediaRequestParams.tacticsInfo,
                             mediaRequestParams.mediaRequestLog
                         )
+
+                        invokeMediaClickListener()
                     }
 
                     /**
@@ -190,13 +189,14 @@ class KSRewardVideo(private val activity: Activity) : RewardVideoWrapper() {
                     override fun onVideoPlayStart() {
                         MobLogger.e(classTarget, "快手联盟激励视频广告开始播放")
 
-                        invokeMediaShowListener()
-
                         reportMediaActionEvent(
                             "show",
                             mediaRequestParams.tacticsInfo,
                             mediaRequestParams.mediaRequestLog
                         )
+
+                        invokeMediaShowListener()
+
                     }
 
                     /**

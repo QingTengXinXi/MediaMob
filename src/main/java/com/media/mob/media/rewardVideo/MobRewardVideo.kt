@@ -2,10 +2,12 @@ package com.media.mob.media.rewardVideo
 
 import android.app.Activity
 import com.media.mob.bean.PositionConfig
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.log.MediaRequestLog
 import com.media.mob.bean.request.SlotParams
 import com.media.mob.dispatch.MobRequestResult
 import com.media.mob.dispatch.loader.RewardVideoLoader
+import com.media.mob.dispatch.loader.helper.MobMediaCacheHelper
 
 class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig) : IRewardVideo {
 
@@ -13,6 +15,14 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
      * 激励视频广告
      */
     private var rewardVideo: IRewardVideo? = null
+
+    /**
+     * 广告策略信息
+     */
+    override val tacticsInfo: TacticsInfo?
+        get() {
+            return rewardVideo?.tacticsInfo
+        }
 
     /**
      * 广告对象的平台名称
@@ -31,19 +41,19 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
         }
 
     /**
-     * 展示上报状态
+     * 展示状态
      */
-    override val showReportState: Boolean
+    override val showState: Boolean
         get() {
-            return rewardVideo?.showReportState ?: false
+            return rewardVideo?.showState ?: false
         }
 
     /**
-     * 点击上报状态
+     * 点击状态
      */
-    override val clickReportState: Boolean
+    override val clickState: Boolean
         get() {
-            return rewardVideo?.clickReportState ?: false
+            return rewardVideo?.clickState ?: false
         }
 
     /**
@@ -91,6 +101,13 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
     }
 
     /**
+     * 检查广告缓存时间
+     */
+    override fun checkMediaCacheTimeout(): Boolean {
+        return rewardVideo != null && rewardVideo?.checkMediaCacheTimeout() == true
+    }
+
+    /**
      * 检查激励视频广告奖励是否发放
      */
     override fun checkRewardVerify(): Boolean {
@@ -101,14 +118,24 @@ class MobRewardVideo(val activity: Activity, val positionConfig: PositionConfig)
      * 销毁广告
      */
     override fun destroy() {
+        if (rewardVideo != null) {
+            if (rewardVideo?.checkMediaValidity() == true) {
+                rewardVideo?.let {
+                    it.tacticsInfo?.let { tacticsInfo ->
+                        MobMediaCacheHelper.insertRewardVideoMobMediaCache(tacticsInfo, it)
+                    }
+                }
+            } else {
+                rewardVideo?.destroy()
+                rewardVideo = null
+            }
+        }
+
         mediaRewardedListener = null
 
         mediaShowListener = null
         mediaClickListener = null
         mediaCloseListener = null
-
-        rewardVideo?.destroy()
-        rewardVideo = null
     }
 
     /**

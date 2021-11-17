@@ -1,5 +1,7 @@
 package com.media.mob.media
 
+import com.media.mob.bean.TacticsInfo
+
 interface IMob {
 
     /**
@@ -8,14 +10,19 @@ interface IMob {
     val platformName: String
 
     /**
-     * 展示上报状态
+     * 广告策略信息
      */
-    val showReportState: Boolean
+    val tacticsInfo: TacticsInfo?
 
     /**
-     * 点击上报状态
+     * 展示状态
      */
-    val clickReportState: Boolean
+    val showState: Boolean
+
+    /**
+     * 点击状态
+     */
+    val clickState: Boolean
 
     /**
      * 广告请求响应时间
@@ -45,7 +52,7 @@ interface IMob {
     /**
      * 检查广告缓存时间
      */
-    fun checkMediaCacheTime(): Boolean
+    fun checkMediaCacheTimeout(): Boolean
 
     /**
      * 销毁广告

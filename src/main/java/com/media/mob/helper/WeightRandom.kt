@@ -17,7 +17,7 @@ class WeightRandom(tacticsConfig: TacticsConfig) {
                 this.weightMap.lastKey()
             }
 
-            this.weightMap[slotTactics.tacticsWeight + summation] = slotTactics
+            this.weightMap[slotTactics.tacticsInfoWeight + summation] = slotTactics
         }
     }
 

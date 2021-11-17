@@ -11,6 +11,7 @@ import com.bytedance.sdk.openadsdk.TTAdSdk
 import com.bytedance.sdk.openadsdk.TTRewardVideoAd
 import com.bytedance.sdk.openadsdk.TTRewardVideoAd.RewardAdInteractionListener
 import com.media.mob.Constants
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaLoadType
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
@@ -28,6 +29,11 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_CSJ
+
+    /**
+     * 广告策略信息
+     */
+    override var tacticsInfo: TacticsInfo? = null
 
     /**
      * 广告请求响应时间
@@ -57,18 +63,18 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return rewardVideoAd != null && System.currentTimeMillis() < rewardVideoAd?.expirationTimestamp ?: 0L && checkMediaCacheTime()
+        return rewardVideoAd != null && System.currentTimeMillis() < rewardVideoAd?.expirationTimestamp ?: 0L && !showState && !checkMediaCacheTimeout()
     }
 
     /**
      * 检查广告缓存时间
      */
-    override fun checkMediaCacheTime(): Boolean {
+    override fun checkMediaCacheTimeout(): Boolean {
         if (Constants.mediaConfig == null) {
-            return true
+            return false
         }
 
-        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.rewardVideoCacheTime
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.rewardVideoCacheTime
     }
 
     /**
@@ -86,6 +92,8 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
     }
 
     fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
+        this.tacticsInfo = mediaRequestParams.tacticsInfo
+
         val adNative = TTAdSdk.getAdManager().createAdNative(mediaRequestParams.activity)
 
         val mediaOrientation = when (mediaRequestParams.activity.resources.configuration.orientation) {
@@ -163,10 +171,8 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
 
                 rewardVideoAd = ttRewardedVideoAd
 
-                MobLogger.e(
-                    classTarget,
-                    "穿山甲激励视频广告展示截止时间: ${rewardVideoAd?.expirationTimestamp} : 当前时间: ${System.currentTimeMillis()}"
-                )
+                MobLogger.e(classTarget,
+                    "穿山甲激励视频广告展示截止时间: ${rewardVideoAd?.expirationTimestamp} : 当前时间: ${System.currentTimeMillis()}")
 
                 rewardVideoAd?.setShowDownLoadBar(true)
 
@@ -178,13 +184,11 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
                     override fun onAdShow() {
                         MobLogger.e(classTarget, "穿山甲激励视频广告展示")
 
-                        invokeMediaShowListener()
-
-                        reportMediaActionEvent(
-                            "show",
+                        reportMediaActionEvent("show",
                             mediaRequestParams.tacticsInfo,
-                            mediaRequestParams.mediaRequestLog
-                        )
+                            mediaRequestParams.mediaRequestLog)
+
+                        invokeMediaShowListener()
                     }
 
                     /**
@@ -193,13 +197,11 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
                     override fun onAdVideoBarClick() {
                         MobLogger.e(classTarget, "穿山甲激励视频广告点击")
 
-                        invokeMediaClickListener()
-
-                        reportMediaActionEvent(
-                            "click",
+                        reportMediaActionEvent("click",
                             mediaRequestParams.tacticsInfo,
-                            mediaRequestParams.mediaRequestLog
-                        )
+                            mediaRequestParams.mediaRequestLog)
+
+                        invokeMediaClickListener()
                     }
 
                     /**
@@ -233,12 +235,10 @@ class CSJRewardVideo(val activity: Activity) : RewardVideoWrapper() {
                         rewardAmount: Int,
                         rewardName: String?,
                         code: Int,
-                        message: String?
+                        message: String?,
                     ) {
-                        MobLogger.e(
-                            classTarget,
-                            "穿山甲激励视频广告奖励下发 Verify:$rewardVerify, RewardAmount:$rewardAmount, RewardName:$rewardName, ErrorCode:$code, ErrorMessage:$message"
-                        )
+                        MobLogger.e(classTarget,
+                            "穿山甲激励视频广告奖励下发 Verify:$rewardVerify, RewardAmount:$rewardAmount, RewardName:$rewardName, ErrorCode:$code, ErrorMessage:$message")
 
                         this@CSJRewardVideo.rewardVerify = rewardVerify
 

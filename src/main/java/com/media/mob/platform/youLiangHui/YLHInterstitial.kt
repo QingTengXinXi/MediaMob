@@ -3,6 +3,7 @@ package com.media.mob.platform.youLiangHui
 import android.app.Activity
 import android.os.SystemClock
 import com.media.mob.Constants
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -21,6 +22,11 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_YLH
+
+    /**
+     * 广告策略信息
+     */
+    override var tacticsInfo: TacticsInfo? = null
 
     /**
      * 广告请求响应时间
@@ -52,18 +58,18 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return interstitialAd != null && interstitialAd?.isValid == true && checkMediaCacheTime()
+        return interstitialAd != null && interstitialAd?.isValid == true && !showState && !checkMediaCacheTimeout()
     }
 
     /**
      * 检查广告缓存时间
      */
-    override fun checkMediaCacheTime(): Boolean {
+    override fun checkMediaCacheTimeout(): Boolean {
         if (Constants.mediaConfig == null) {
-            return true
+            return false
         }
 
-        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.interstitialCacheTime
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.interstitialCacheTime
     }
 
     /**
@@ -78,6 +84,8 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
      * 请求插屏广告
      */
     fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
+        this.tacticsInfo = mediaRequestParams.tacticsInfo
+
         interstitialAd = UnifiedInterstitialAD(
             mediaRequestParams.activity,
             mediaRequestParams.tacticsInfo.thirdSlotId,
@@ -159,9 +167,9 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
                 override fun onADExposure() {
                     MobLogger.e(classTarget, "优量汇插屏广告曝光")
 
-                    invokeMediaShowListener()
-
                     reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+
+                    invokeMediaShowListener()
                 }
 
                 /**
@@ -170,9 +178,9 @@ class YLHInterstitial(val activity: Activity) : InterstitialWrapper() {
                 override fun onADClicked() {
                     MobLogger.e(classTarget, "优量汇插屏广告点击")
 
-                    invokeMediaClickListener()
-
                     reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+
+                    invokeMediaClickListener()
                 }
 
                 /**

@@ -7,14 +7,14 @@ import com.media.mob.bean.log.MediaRequestLog
 abstract class MobViewWrapper(context: Context) : IMobView(context) {
 
     /**
-     * 展示上报状态
+     * 展示状态
      */
-    override var showReportState: Boolean = false
+    override var showState: Boolean = false
 
     /**
-     * 点击上报状态
+     * 点击状态
      */
-    override var clickReportState: Boolean = false
+    override var clickState: Boolean = false
 
     /**
      * 销毁广告
@@ -29,11 +29,11 @@ abstract class MobViewWrapper(context: Context) : IMobView(context) {
      * 上报广告行为事件
      */
     fun reportMediaActionEvent(event: String, tacticsInfo: TacticsInfo, mediaRequestLog: MediaRequestLog) {
-        if (("show" == event && !showReportState) || ("click" == event && !clickReportState)) {
+        if (("show" == event && !showState) || ("click" == event && !clickState)) {
             if ("show" == event) {
-                showReportState = true
+                showState = true
             } else if ("click" == event) {
-                clickReportState = true
+                clickState = true
             }
 
             val params = HashMap<String, String>()

@@ -9,6 +9,7 @@ import com.baidu.mobads.sdk.api.ExpressInterstitialListener
 import com.baidu.mobads.sdk.api.InterstitialAd
 import com.baidu.mobads.sdk.api.InterstitialAdListener
 import com.media.mob.Constants
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.InterstitialScene
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
@@ -25,6 +26,11 @@ class BQTInterstitial : InterstitialWrapper() {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_BQT
+
+    /**
+     * 广告策略信息
+     */
+    override var tacticsInfo: TacticsInfo? = null
 
     /**
      * 广告请求响应时间
@@ -78,21 +84,21 @@ class BQTInterstitial : InterstitialWrapper() {
      */
     override fun checkMediaValidity(): Boolean {
         return if (requestNewTemplateExpress) {
-            expressInterstitialAd != null && expressInterstitialAd?.isReady == true && checkMediaCacheTime()
+            expressInterstitialAd != null && expressInterstitialAd?.isReady == true && !showState && !checkMediaCacheTimeout()
         } else {
-            interstitialAd != null && interstitialAd?.isAdReady == true && checkMediaCacheTime()
+            interstitialAd != null && interstitialAd?.isAdReady == true && !showState && !checkMediaCacheTimeout()
         }
     }
 
     /**
      * 检查广告缓存时间
      */
-    override fun checkMediaCacheTime(): Boolean {
+    override fun checkMediaCacheTimeout(): Boolean {
         if (Constants.mediaConfig == null) {
-            return true
+            return false
         }
 
-        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.interstitialCacheTime
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.interstitialCacheTime
     }
 
     /**
@@ -122,6 +128,8 @@ class BQTInterstitial : InterstitialWrapper() {
      * 请求插屏广告
      */
     fun requestInterstitial(mediaRequestParams: MediaRequestParams<IInterstitial>) {
+        this.tacticsInfo = mediaRequestParams.tacticsInfo
+
         if (mediaRequestParams.slotParams.interstitialNewTemplateExpress) {
             requestNewTemplateExpress = true
             requestNewTemplate(mediaRequestParams)
@@ -157,13 +165,9 @@ class BQTInterstitial : InterstitialWrapper() {
             override fun onAdClick() {
                 MobLogger.e(classTarget, "百青藤插屏广告点击")
 
-                invokeMediaClickListener()
+                reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
 
-                reportMediaActionEvent(
-                    "click",
-                    mediaRequestParams.tacticsInfo,
-                    mediaRequestParams.mediaRequestLog
-                )
+                invokeMediaClickListener()
             }
 
             /**
@@ -183,9 +187,9 @@ class BQTInterstitial : InterstitialWrapper() {
 
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
-                mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 82002, "百青藤插屏广告加载失败: Code=$code, Message=${message ?: "Unknown"}")
-                )
+                mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null,
+                    82002,
+                    "百青藤插屏广告加载失败: Code=$code, Message=${message ?: "Unknown"}"))
 
                 destroy()
             }
@@ -198,9 +202,9 @@ class BQTInterstitial : InterstitialWrapper() {
 
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(code, message ?: "Unknown")
 
-                mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 82002, "百青藤插屏广告无广告返回: Code=$code, Message=${message ?: "Unknown"}")
-                )
+                mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null,
+                    82002,
+                    "百青藤插屏广告无广告返回: Code=$code, Message=${message ?: "Unknown"}"))
 
                 destroy()
             }
@@ -211,13 +215,9 @@ class BQTInterstitial : InterstitialWrapper() {
             override fun onADExposed() {
                 MobLogger.e(classTarget, "百青藤插屏广告展示")
 
-                invokeMediaShowListener()
+                reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
 
-                reportMediaActionEvent(
-                    "show",
-                    mediaRequestParams.tacticsInfo,
-                    mediaRequestParams.mediaRequestLog
-                )
+                invokeMediaShowListener()
             }
 
             /**
@@ -289,9 +289,9 @@ class BQTInterstitial : InterstitialWrapper() {
             override fun onAdPresent() {
                 MobLogger.e(classTarget, "百青藤插屏广告展示")
 
-                invokeMediaShowListener()
-
                 reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+
+                invokeMediaShowListener()
             }
 
             /**
@@ -300,9 +300,9 @@ class BQTInterstitial : InterstitialWrapper() {
             override fun onAdClick(interstitialAd: InterstitialAd?) {
                 MobLogger.e(classTarget, "百青藤插屏广告点击")
 
-                invokeMediaClickListener()
-
                 reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+
+                invokeMediaClickListener()
             }
 
             /**
@@ -322,9 +322,9 @@ class BQTInterstitial : InterstitialWrapper() {
 
                 mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, message ?: "Unknown")
 
-                mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(null, 82002, "百青藤插屏广告加载失败: Message=${message ?: "Unknown"}")
-                )
+                mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(null,
+                    82002,
+                    "百青藤插屏广告加载失败: Message=${message ?: "Unknown"}"))
 
                 destroy()
             }

@@ -14,6 +14,7 @@ import com.media.mob.platform.IPlatform
 import com.bytedance.sdk.openadsdk.TTAdSdk
 import com.bytedance.sdk.openadsdk.TTSplashAd
 import com.media.mob.Constants
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaLoadType
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -27,6 +28,11 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_CSJ
+
+    /**
+     * 广告策略信息
+     */
+    override var tacticsInfo: TacticsInfo? = null
 
     /**
      * 广告请求响应时间
@@ -47,18 +53,18 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return splashAd != null && checkMediaCacheTime()
+        return splashAd != null && !showState && checkMediaCacheTimeout()
     }
 
     /**
      * 检查广告缓存时间
      */
-    override fun checkMediaCacheTime(): Boolean {
+    override fun checkMediaCacheTimeout(): Boolean {
         if (Constants.mediaConfig == null) {
-            return true
+            return false
         }
 
-        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.splashCacheTime
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.splashCacheTime
     }
 
     /**
@@ -74,6 +80,8 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
     }
 
     fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+        this.tacticsInfo = mediaRequestParams.tacticsInfo
+
         val adNative = TTAdSdk.getAdManager().createAdNative(mediaRequestParams.activity)
 
         val mediaLoadType = when (mediaRequestParams.slotParams.mediaLoadType) {
@@ -172,13 +180,11 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
                     override fun onAdClicked(view: View?, type: Int) {
                         MobLogger.e(classTarget, "穿山甲开屏广告点击")
 
-                        invokeMediaClickListener()
-
-                        reportMediaActionEvent(
-                            "click",
+                        reportMediaActionEvent("click",
                             mediaRequestParams.tacticsInfo,
-                            mediaRequestParams.mediaRequestLog
-                        )
+                            mediaRequestParams.mediaRequestLog)
+
+                        invokeMediaClickListener()
                     }
 
                     /**
@@ -187,13 +193,11 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
                     override fun onAdShow(view: View?, type: Int) {
                         MobLogger.e(classTarget, "穿山甲开屏广告展示")
 
-                        invokeMediaShowListener()
-
-                        reportMediaActionEvent(
-                            "show",
+                        reportMediaActionEvent("show",
                             mediaRequestParams.tacticsInfo,
-                            mediaRequestParams.mediaRequestLog
-                        )
+                            mediaRequestParams.mediaRequestLog)
+
+                        invokeMediaShowListener()
                     }
 
                     /**

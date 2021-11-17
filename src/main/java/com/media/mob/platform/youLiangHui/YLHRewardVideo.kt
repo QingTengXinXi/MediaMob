@@ -2,6 +2,7 @@ package com.media.mob.platform.youLiangHui
 
 import android.os.SystemClock
 import com.media.mob.Constants
+import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
@@ -24,6 +25,11 @@ class YLHRewardVideo : RewardVideoWrapper() {
      * 广告平台名称
      */
     override val platformName: String = IPlatform.PLATFORM_YLH
+
+    /**
+     * 广告策略信息
+     */
+    override var tacticsInfo: TacticsInfo? = null
 
     /**
      * 广告请求响应时间
@@ -53,18 +59,18 @@ class YLHRewardVideo : RewardVideoWrapper() {
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return rewardVideoAd != null && checkRewardVideoValidity(rewardVideoAd) && checkMediaCacheTime()
+        return rewardVideoAd != null && checkRewardVideoValidity(rewardVideoAd) && !showState && !checkMediaCacheTimeout()
     }
 
     /**
      * 检查广告缓存时间
      */
-    override fun checkMediaCacheTime(): Boolean {
+    override fun checkMediaCacheTimeout(): Boolean {
         if (Constants.mediaConfig == null) {
-            return true
+            return false
         }
 
-        return (SystemClock.elapsedRealtime() - mediaResponseTime) < Constants.mediaConfig.rewardVideoCacheTime
+        return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.rewardVideoCacheTime
     }
 
     /**
@@ -82,6 +88,8 @@ class YLHRewardVideo : RewardVideoWrapper() {
     }
 
     fun requestRewardVideo(mediaRequestParams: MediaRequestParams<IRewardVideo>) {
+        this.tacticsInfo = mediaRequestParams.tacticsInfo
+
         rewardVideoAd = RewardVideoAD(
             mediaRequestParams.activity,
             mediaRequestParams.tacticsInfo.thirdSlotId,
@@ -147,9 +155,9 @@ class YLHRewardVideo : RewardVideoWrapper() {
                 override fun onADExpose() {
                     MobLogger.e(classTarget, "优量汇激励视频广告曝光")
 
-                    invokeMediaShowListener()
-
                     reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+
+                    invokeMediaShowListener()
                 }
 
                 /**
@@ -169,9 +177,9 @@ class YLHRewardVideo : RewardVideoWrapper() {
                 override fun onADClick() {
                     MobLogger.e(classTarget, "优量汇激励视频广告点击")
 
-                    invokeMediaClickListener()
-
                     reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+
+                    invokeMediaClickListener()
                 }
 
                 /**
