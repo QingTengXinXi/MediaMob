@@ -61,6 +61,11 @@ abstract class MobLoader<T : IMob>(
     private var invokedRequestResultCallback: Boolean = false
 
     /**
+     * 是否已检查了并行请求策略配置结果
+     */
+    private var checkedParallelResultFailed: Boolean = false
+
+    /**
      * 初始化配置信息
      */
     init {
@@ -101,6 +106,7 @@ abstract class MobLoader<T : IMob>(
                     handlePriorityTacticsConfig(tacticsConfig, slotParams)
                 }
                 else -> {
+                    checkedParallelResultFailed = false
                     handleParallelTacticsConfig(tacticsConfig, slotParams)
                 }
             }
@@ -241,9 +247,11 @@ abstract class MobLoader<T : IMob>(
             }
 
             MobLogger.e(classTarget, "并行类型广告位策略配置的请求结果中获取广告位请求结果失败，检查下一条广告位策略配置")
+            checkedParallelResultFailed = true
             handleRequest(slotParams)
         } else {
             MobLogger.e(classTarget, "并行类型广告位策略配置的请求结果为空，检查下一条广告位策略配置")
+            checkedParallelResultFailed = true
             handleRequest(slotParams)
         }
     }
@@ -300,7 +308,7 @@ abstract class MobLoader<T : IMob>(
 
         if (tacticsConfig.tacticsType == TacticsType.TYPE_PARALLEL) {
             MobLogger.e(classTarget, "广告位策略配置为并行请求策略，判断是否已回调请求结果接口: $invokedRequestResultCallback")
-            if (invokedRequestResultCallback) {
+            if (invokedRequestResultCallback || checkedParallelResultFailed) {
                 MobLogger.e(classTarget, "广告位策略配置为并行请求策略，已回调请求结果接口，将请求结果存储到公共缓存中")
                 when (slotType) {
                     "Splash" -> {
