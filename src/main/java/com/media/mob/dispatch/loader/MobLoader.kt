@@ -119,7 +119,16 @@ abstract class MobLoader<T : IMob>(
 
         if (tacticsInfo != null) {
             MobLogger.e(classTarget, "权重类型广告位策略配置随机到的策略信息为: $tacticsInfo")
-            handleSlotTactics(tacticsConfig, tacticsInfo, slotParams)
+
+            val result = MobMediaCacheHelper.checkMobMediaCommonCache<T>(tacticsInfo, slotType)
+
+            MobLogger.e(classTarget, "权重类型广告位策略配置从公共缓存获取广告位请求结果: $tacticsInfo : ${result != null}")
+
+            if (result == null) {
+                handleSlotTactics(tacticsConfig, tacticsInfo, slotParams)
+            } else {
+                invokeRequestSuccess(result)
+            }
         } else {
             MobLogger.e(classTarget, "权重类型广告位策略配置随机到的策略信息为空，检查下一条广告位策略配置")
             handleRequest(slotParams)
@@ -142,7 +151,16 @@ abstract class MobLoader<T : IMob>(
 
         if (tacticsInfo != null) {
             MobLogger.e(classTarget, "优先级类型广告位策略配置随机到的策略信息为: $tacticsInfo")
-            handleSlotTactics(tacticsConfig, tacticsInfo, slotParams)
+
+            val result = MobMediaCacheHelper.checkMobMediaCommonCache<T>(tacticsInfo, slotType)
+
+            MobLogger.e(classTarget, "优先级类型广告位策略配置从公共缓存获取广告位请求结果: $tacticsInfo : ${result != null}")
+
+            if (result == null) {
+                handleSlotTactics(tacticsConfig, tacticsInfo, slotParams)
+            } else {
+                invokeRequestSuccess(result)
+            }
         } else {
             MobLogger.e(classTarget, "优先级类型广告位策略配置获取到的策略信息为空，检查下一条广告位策略配置")
             handleRequest(slotParams)
