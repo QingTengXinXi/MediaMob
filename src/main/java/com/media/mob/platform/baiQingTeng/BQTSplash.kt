@@ -129,7 +129,7 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
         /**
          * 是否在加载开屏物料后回调请求成功，默认请求到广告立即回调
          */
-        parameters.addExtra(SplashAd.KEY_LOAD_AFTER_CACHE_END, "false")
+        parameters.addExtra(SplashAd.KEY_LOAD_AFTER_CACHE_END, "true")
 
         /**
          * 是否展示点击引导按钮，默认不展示。若设置可限制点击区域，则此选项默认打开
@@ -161,14 +161,7 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
                  * 开屏广告请求成功回调
                  */
                 override fun onADLoaded() {
-                    if (!callbackSuccess) {
-                        callbackSuccess = true
-
-                        mediaResponseTime = SystemClock.elapsedRealtime()
-
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
-                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTSplash))
-                    }
+                    MobLogger.e(classTarget, "百青藤开屏广告请求成功，等待广告位素材下载成功")
                 }
 
                 /**
@@ -191,6 +184,15 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
                  */
                 override fun onAdCacheSuccess() {
                     MobLogger.e(classTarget, "百青藤开屏广告物料缓存成功")
+
+                    if (!callbackSuccess) {
+                        callbackSuccess = true
+
+                        mediaResponseTime = SystemClock.elapsedRealtime()
+
+                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@BQTSplash))
+                    }
                 }
 
                 /**

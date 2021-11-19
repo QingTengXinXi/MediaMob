@@ -296,15 +296,21 @@ abstract class MobLoader<T : IMob>(
                     }
                 }
             } else {
-                MobLogger.e(classTarget, "广告位策略配置为并行请求策略，未回调请求结果接口，将请求结果存储到请求缓存中")
-                val key = "${tacticsConfig.tacticsSequence}-${tacticsInfo.tacticsInfoSequence}"
-                if (mobMediaResponseCache.containsKey(key)) {
-                    mobMediaResponseCache[key]?.apply {
-                        offer(result)
-                    }
+                if (tacticsConfig.tacticsPriorityReturn) {
+                    MobLogger.e(classTarget, "广告位策略配置为并行请求策略，未回调请求结果接口，策略开启优先返回填充的广告开关，回调广告请求成功回调: ${result.tacticsInfo}")
+
+                    invokeRequestSuccess(result)
                 } else {
-                    mobMediaResponseCache[key] = ConcurrentLinkedQueue<T>().apply {
-                        offer(result)
+                    MobLogger.e(classTarget, "广告位策略配置为并行请求策略，未回调请求结果接口，将请求结果存储到请求缓存中")
+                    val key = "${tacticsConfig.tacticsSequence}-${tacticsInfo.tacticsInfoSequence}"
+                    if (mobMediaResponseCache.containsKey(key)) {
+                        mobMediaResponseCache[key]?.apply {
+                            offer(result)
+                        }
+                    } else {
+                        mobMediaResponseCache[key] = ConcurrentLinkedQueue<T>().apply {
+                            offer(result)
+                        }
                     }
                 }
             }

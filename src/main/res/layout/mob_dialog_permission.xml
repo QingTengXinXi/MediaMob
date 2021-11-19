@@ -6,7 +6,6 @@
     android:layout_height="400dp"
     android:layout_gravity="bottom"
     android:background="@drawable/mob_shape_dialog_background"
-    android:orientation="vertical"
     tools:ignore="HardcodedText">
 
     <TextView

@@ -20,7 +20,7 @@ class TacticsInfo(
      * 第三方广告平台的名称
      */
     @SerializedName("third_platform_name")
-    var thirdPlatformName: String,
+    val thirdPlatformName: String,
 
     /**
      * 广告位策略信息的权重
@@ -44,8 +44,6 @@ class TacticsInfo(
         if (thirdAppId != other.thirdAppId) return false
         if (thirdSlotId != other.thirdSlotId) return false
         if (thirdPlatformName != other.thirdPlatformName) return false
-        if (tacticsInfoWeight != other.tacticsInfoWeight) return false
-        if (tacticsInfoSequence != other.tacticsInfoSequence) return false
 
         return true
     }
@@ -54,8 +52,6 @@ class TacticsInfo(
         var result = thirdAppId.hashCode()
         result = 31 * result + thirdSlotId.hashCode()
         result = 31 * result + thirdPlatformName.hashCode()
-        result = 31 * result + tacticsInfoWeight
-        result = 31 * result + tacticsInfoSequence
         return result
     }
 
