@@ -3,14 +3,15 @@ package com.media.mob.platform.youLiangHui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.SystemClock
+import android.view.ViewGroup
 import com.media.mob.Constants
 import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.lifecycle.ActivityLifecycle
 import com.media.mob.helper.logger.MobLogger
-import com.media.mob.media.view.IMobView
-import com.media.mob.media.view.MobViewWrapper
+import com.media.mob.media.view.splash.ISplash
+import com.media.mob.media.view.splash.SplashViewWrapper
 import com.media.mob.platform.IPlatform
 import com.media.mob.platform.youLiangHui.helper.DownloadConfirmHelper
 import com.qq.e.ads.splash.SplashAD
@@ -18,7 +19,7 @@ import com.qq.e.ads.splash.SplashADListener
 import com.qq.e.comm.util.AdError
 
 @SuppressLint("ViewConstructor")
-class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
+class YLHSplash(private val activity: Activity) : SplashViewWrapper() {
 
     private val classTarget = YLHSplash::class.java.simpleName
 
@@ -63,6 +64,11 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
     private var activityLifecycle: ActivityLifecycle? = null
 
     /**
+     * 开屏是否请求全屏广告
+     */
+    private var splashFullScreenShow: Boolean = false
+
+    /**
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
@@ -81,17 +87,32 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
     }
 
     /**
+     * 展示开屏广告
+     */
+    override fun show(viewGroup: ViewGroup) {
+        if (splashAd != null) {
+            if (splashFullScreenShow) {
+                splashAd?.showFullScreenAd(viewGroup)
+            } else {
+                splashAd?.showAd(viewGroup)
+            }
+        }
+    }
+
+    /**
      * 销毁广告对象
      */
     override fun destroy() {
-        super.destroy()
-
         splashAd = null
 
         activityLifecycle?.unregisterActivityLifecycle(activity)
+
+        mediaShowListener = null
+        mediaClickListener = null
+        mediaCloseListener = null
     }
 
-    fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+    fun requestSplash(mediaRequestParams: MediaRequestParams<ISplash>) {
         activityLifecycle = object : ActivityLifecycle(activity) {
             override fun activityResumed() {
                 super.activityResumed()
@@ -117,126 +138,123 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
 
         this.tacticsInfo = mediaRequestParams.tacticsInfo
 
-        splashAd = SplashAD(
-            mediaRequestParams.activity,
-            mediaRequestParams.tacticsInfo.thirdSlotId,
-            object : SplashADListener {
-                /**
-                 * 开屏广告加载失败
-                 */
-                override fun onNoAD(adError: AdError?) {
-                    MobLogger.e(
-                        classTarget,
+        splashAd = SplashAD(activity, mediaRequestParams.tacticsInfo.thirdSlotId, object : SplashADListener {
+            /**
+             * 开屏广告加载失败
+             */
+            override fun onNoAD(adError: AdError?) {
+                MobLogger.e(
+                    classTarget,
+                    "优量汇开屏广告请求失败: Code=${adError?.errorCode ?: -1}, Message=${adError?.errorMsg ?: "Unknown"}"
+                )
+
+                mediaRequestParams.mediaPlatformLog.handleRequestFailed(
+                    adError?.errorCode ?: -1,
+                    adError?.errorMsg ?: "Unknown"
+                )
+
+                mediaRequestParams.mediaRequestResult.invoke(
+                    MediaRequestResult(
+                        null, 84002,
                         "优量汇开屏广告请求失败: Code=${adError?.errorCode ?: -1}, Message=${adError?.errorMsg ?: "Unknown"}"
                     )
+                )
 
-                    mediaRequestParams.mediaPlatformLog.handleRequestFailed(
-                        adError?.errorCode ?: -1,
-                        adError?.errorMsg ?: "Unknown"
-                    )
+                destroy()
+            }
 
-                    mediaRequestParams.mediaRequestResult.invoke(
-                        MediaRequestResult(
-                            null, 84002,
-                            "优量汇开屏广告请求失败: Code=${adError?.errorCode ?: -1}, Message=${adError?.errorMsg ?: "Unknown"}"
-                        )
-                    )
+            /**
+             * 开屏广告加载成功回调
+             */
+            override fun onADLoaded(expireTimestamp: Long) {
+                if (!callbackSuccess) {
+                    callbackSuccess = true
 
-                    destroy()
+                    mediaResponseTime = SystemClock.elapsedRealtime()
+
+                    mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                    mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
+                }
+            }
+
+            /**
+             * 开屏广告成功展示
+             */
+            override fun onADPresent() {
+                if (!callbackSuccess) {
+                    callbackSuccess = true
+
+                    mediaResponseTime = SystemClock.elapsedRealtime()
+
+                    mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                    mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
                 }
 
-                /**
-                 * 开屏广告加载成功回调
-                 */
-                override fun onADLoaded(expireTimestamp: Long) {
-                    if (!callbackSuccess) {
-                        callbackSuccess = true
+                MobLogger.e(classTarget, "优量汇开屏广告展示")
+            }
 
-                        mediaResponseTime = SystemClock.elapsedRealtime()
+            /**
+             * 开屏广告曝光
+             */
+            override fun onADExposure() {
+                if (!callbackSuccess) {
+                    callbackSuccess = true
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
-                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
-                    }
+                    mediaResponseTime = SystemClock.elapsedRealtime()
+
+                    mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+                    mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
                 }
 
-                /**
-                 * 开屏广告成功展示
-                 */
-                override fun onADPresent() {
-                    if (!callbackSuccess) {
-                        callbackSuccess = true
+                MobLogger.e(classTarget, "优量汇开屏广告曝光")
 
-                        mediaResponseTime = SystemClock.elapsedRealtime()
+                invokeMediaShowListener()
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
-                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
-                    }
+                reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+            }
 
-                    MobLogger.e(classTarget, "优量汇开屏广告展示")
-                }
+            /**
+             * 开屏广告点击
+             */
+            override fun onADClicked() {
+                clickedState = true
 
-                /**
-                 * 开屏广告曝光
-                 */
-                override fun onADExposure() {
-                    if (!callbackSuccess) {
-                        callbackSuccess = true
+                MobLogger.e(classTarget, "优量汇开屏广告点击")
 
-                        mediaResponseTime = SystemClock.elapsedRealtime()
+                invokeMediaClickListener()
 
-                        mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
-                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@YLHSplash))
-                    }
+                reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
+            }
 
-                    MobLogger.e(classTarget, "优量汇开屏广告曝光")
+            /**
+             * 开屏广告倒计时回调(ms)
+             */
+            override fun onADTick(millisUntilFinished: Long) {
+                MobLogger.e(classTarget, "优量汇开屏广告倒计时: $millisUntilFinished")
+            }
 
-                    invokeMediaShowListener()
+            /**
+             * 开屏广告关闭
+             */
+            override fun onADDismissed() {
+                MobLogger.e(
+                    classTarget,
+                    "优量汇开屏广告关闭: $clickedState : $activityPaused : ${Thread.currentThread().name}"
+                )
 
-                    reportMediaActionEvent("show", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
-                }
-
-                /**
-                 * 开屏广告点击
-                 */
-                override fun onADClicked() {
-                    clickedState = true
-
-                    MobLogger.e(classTarget, "优量汇开屏广告点击")
-
-                    invokeMediaClickListener()
-
-                    reportMediaActionEvent("click", mediaRequestParams.tacticsInfo, mediaRequestParams.mediaRequestLog)
-                }
-
-                /**
-                 * 开屏广告倒计时回调(ms)
-                 */
-                override fun onADTick(millisUntilFinished: Long) {
-                    MobLogger.e(classTarget, "优量汇开屏广告倒计时: $millisUntilFinished")
-                }
-
-                /**
-                 * 开屏广告关闭
-                 */
-                override fun onADDismissed() {
-                    MobLogger.e(
-                        classTarget,
-                        "优量汇开屏广告关闭: $clickedState : $activityPaused : ${Thread.currentThread().name}"
-                    )
-
-                    if (clickedState) {
-                        if (!activityPaused) {
-                            invokeMediaCloseListener()
-
-                            MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
-                        }
-                    } else {
+                if (clickedState) {
+                    if (!activityPaused) {
                         invokeMediaCloseListener()
 
                         MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
                     }
+                } else {
+                    invokeMediaCloseListener()
+
+                    MobLogger.e(classTarget, "优量汇开屏广告执行广告关闭：$clickedState : $activityPaused")
                 }
-            },
+            }
+        },
             if (mediaRequestParams.slotParams.splashRequestTimeOut >= 0) mediaRequestParams.slotParams.splashRequestTimeOut.toInt() else 0
         )
 
@@ -247,9 +265,11 @@ class YLHSplash(private val activity: Activity) : MobViewWrapper(activity) {
         mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
         if (mediaRequestParams.slotParams.splashFullScreenShow) {
-            splashAd?.fetchFullScreenAndShowIn(mediaRequestParams.slotParams.splashShowViewGroup)
+            splashFullScreenShow = true
+            splashAd?.fetchFullScreenAdOnly()
         } else {
-            splashAd?.fetchAndShowIn(mediaRequestParams.slotParams.splashShowViewGroup)
+            splashFullScreenShow = false
+            splashAd?.fetchAdOnly()
         }
     }
 }

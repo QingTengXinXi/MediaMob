@@ -20,7 +20,7 @@ import com.media.mob.helper.thread.runMobMediaLoaderThread
 import com.media.mob.media.IMob
 import com.media.mob.media.interstitial.IInterstitial
 import com.media.mob.media.rewardVideo.IRewardVideo
-import com.media.mob.media.view.IMobView
+import com.media.mob.media.view.splash.ISplash
 import com.media.mob.platform.IPlatform
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentSkipListMap
@@ -240,7 +240,7 @@ abstract class MobLoader<T : IMob>(
                 val result = mobMediaResponseCache[firstKey]?.poll()
 
                 if (result != null) {
-                    MobLogger.e(classTarget, "并行类型广告位策略配置的请求结果中，获取到的广告信息不为空，执行请求成功操作")
+                    MobLogger.e(classTarget, "并行类型广告位策略配置的请求结果中，获取到的广告信息不为空，执行请求成功操作: ${result.tacticsInfo}")
                     invokeRequestSuccess(result)
                     return
                 }
@@ -312,7 +312,7 @@ abstract class MobLoader<T : IMob>(
                 MobLogger.e(classTarget, "广告位策略配置为并行请求策略，已回调请求结果接口，将请求结果存储到公共缓存中")
                 when (slotType) {
                     "Splash" -> {
-                        MobMediaCacheHelper.insertSplashMobMediaCache(tacticsInfo, result as IMobView)
+                        MobMediaCacheHelper.insertSplashMobMediaCache(tacticsInfo, result as ISplash)
                     }
                     "RewardVideo" -> {
                         MobMediaCacheHelper.insertRewardVideoMobMediaCache(tacticsInfo, result as IRewardVideo)

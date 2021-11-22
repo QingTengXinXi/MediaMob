@@ -15,13 +15,13 @@ import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.lifecycle.ActivityLifecycle
 import com.media.mob.helper.logger.MobLogger
-import com.media.mob.media.view.IMobView
-import com.media.mob.media.view.MobViewWrapper
+import com.media.mob.media.view.splash.ISplash
+import com.media.mob.media.view.splash.SplashViewWrapper
 import com.media.mob.platform.IPlatform
 
 @SuppressLint("ViewConstructor")
-class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
-    
+class KSSplash(private val activity: Activity) : SplashViewWrapper() {
+
     private val classTarget = KSSplash::class.java.simpleName
 
     /**
@@ -70,6 +70,11 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
     private var activityLifecycle: ActivityLifecycle? = null
 
     /**
+     * 快手开屏广告View
+     */
+    private var splashView: View? = null
+
+    /**
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
@@ -87,6 +92,24 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
         return (SystemClock.elapsedRealtime() - mediaResponseTime) > Constants.mediaConfig.splashCacheTime
     }
 
+    /**
+     * 展示开屏广告
+     */
+    override fun show(viewGroup: ViewGroup) {
+        if (splashView != null) {
+
+            viewGroup.removeAllViews()
+
+            splashView?.let {
+                it.layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+
+                viewGroup.addView(it)
+            }
+        }
+    }
 
     /**
      * 销毁广告对象
@@ -95,9 +118,13 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
         activityLifecycle?.unregisterActivityLifecycle(activity)
 
         splashAd = null
+
+        mediaShowListener = null
+        mediaClickListener = null
+        mediaCloseListener = null
     }
 
-    fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+    fun requestSplash(mediaRequestParams: MediaRequestParams<ISplash>) {
         activityLifecycle = object : ActivityLifecycle(activity) {
             override fun activityResumed() {
                 super.activityResumed()
@@ -166,7 +193,7 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
 
                 splashAd = splashScreenAd
 
-                val view: View? = splashAd?.getView(mediaRequestParams.activity, object : KsSplashScreenAd.SplashScreenAdInteractionListener {
+                splashView = splashAd?.getView(activity, object : KsSplashScreenAd.SplashScreenAdInteractionListener {
                     override fun onAdClicked() {
                         MobLogger.e(classTarget, "快手联盟开屏广告点击")
 
@@ -264,25 +291,13 @@ class KSSplash(private val activity: Activity) : MobViewWrapper(activity) {
                     }
                 })
 
-                if (!mediaRequestParams.activity.isFinishing) {
-                    if (view != null && mediaRequestParams.slotParams.splashShowViewGroup != null) {
-                        mediaRequestParams.slotParams.splashShowViewGroup?.removeAllViews()
-
-                        view.layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
-
-                        mediaRequestParams.slotParams.splashShowViewGroup?.addView(view)
-
+                if (!activity.isFinishing) {
+                    if (splashView != null) {
                         mediaResponseTime = SystemClock.elapsedRealtime()
 
                         mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
 
-                        mediaRequestParams.mediaRequestResult.invoke(
-                            MediaRequestResult(this@KSSplash)
-                        )
-
+                        mediaRequestParams.mediaRequestResult.invoke(MediaRequestResult(this@KSSplash))
                     } else {
                         mediaRequestParams.mediaPlatformLog.handleRequestFailed(-1, "快手联盟开屏广告展示异常，开屏广告View为Null")
 

@@ -1,8 +1,9 @@
 package com.media.mob.platform.jingZhunTong
 
-import android.content.Context
+import android.app.Activity
 import android.os.SystemClock
 import android.view.View
+import android.view.ViewGroup
 import com.jd.ad.sdk.imp.JadListener
 import com.jd.ad.sdk.imp.splash.JadSplash
 import com.jd.ad.sdk.work.JadPlacementParams
@@ -11,11 +12,11 @@ import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
-import com.media.mob.media.view.IMobView
-import com.media.mob.media.view.MobViewWrapper
+import com.media.mob.media.view.splash.ISplash
+import com.media.mob.media.view.splash.SplashViewWrapper
 import com.media.mob.platform.IPlatform
 
-class JZTSplash(context: Context) : MobViewWrapper(context) {
+class JZTSplash(private val activity: Activity) : SplashViewWrapper() {
 
     private val classTarget = JZTSplash::class.java.simpleName
 
@@ -40,6 +41,11 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
     private var splashAd: JadSplash? = null
 
     /**
+     * 京准通开屏广告View
+     */
+    private var splashView: View? = null
+
+    /**
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
@@ -58,16 +64,31 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
     }
 
     /**
+     * 展示开屏广告
+     */
+    override fun show(viewGroup: ViewGroup) {
+        if (splashView != null) {
+            viewGroup.removeAllViews()
+
+            splashView?.let {
+                viewGroup.addView(it)
+            }
+        }
+    }
+
+    /**
      * 销毁广告对象
      */
     override fun destroy() {
-        super.destroy()
-
         splashAd?.destroy()
         splashAd = null
+
+        mediaShowListener = null
+        mediaClickListener = null
+        mediaCloseListener = null
     }
 
-    fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+    fun requestSplash(mediaRequestParams: MediaRequestParams<ISplash>) {
         this.tacticsInfo = mediaRequestParams.tacticsInfo
 
         val clickType = if (mediaRequestParams.slotParams.splashLimitClickArea) {
@@ -84,7 +105,7 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
             .setSplashAdClickAreaType(clickType)
             .build()
 
-        splashAd = JadSplash(mediaRequestParams.activity, jadParams, object : JadListener {
+        splashAd = JadSplash(activity, jadParams, object : JadListener {
 
             /**
              * 开屏广告加载成功回调
@@ -127,9 +148,6 @@ class JZTSplash(context: Context) : MobViewWrapper(context) {
                 }
 
                 MobLogger.e(classTarget, "京准通开屏广告渲染成功")
-
-                mediaRequestParams.slotParams.splashShowViewGroup?.removeAllViews()
-                mediaRequestParams.slotParams.splashShowViewGroup?.addView(view)
 
                 mediaResponseTime = SystemClock.elapsedRealtime()
 

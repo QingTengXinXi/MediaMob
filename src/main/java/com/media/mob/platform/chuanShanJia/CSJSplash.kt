@@ -1,26 +1,27 @@
 package com.media.mob.platform.chuanShanJia
 
-import android.content.Context
+import android.app.Activity
 import android.os.SystemClock
 import android.view.View
+import android.view.ViewGroup
 import com.bytedance.sdk.openadsdk.AdSlot
 import com.bytedance.sdk.openadsdk.TTAdConstant
 import com.bytedance.sdk.openadsdk.TTAdLoadType
 import com.bytedance.sdk.openadsdk.TTAdNative.SplashAdListener
-import com.media.mob.bean.request.MediaRequestParams
-import com.media.mob.media.view.IMobView
-import com.media.mob.media.view.MobViewWrapper
-import com.media.mob.platform.IPlatform
 import com.bytedance.sdk.openadsdk.TTAdSdk
 import com.bytedance.sdk.openadsdk.TTSplashAd
 import com.media.mob.Constants
 import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.request.MediaLoadType
+import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
 import com.media.mob.helper.thread.runMainThread
+import com.media.mob.media.view.splash.ISplash
+import com.media.mob.media.view.splash.SplashViewWrapper
+import com.media.mob.platform.IPlatform
 
-class CSJSplash(context: Context) : MobViewWrapper(context) {
+class CSJSplash(private val activity: Activity) : SplashViewWrapper() {
 
     private val classTarget = CSJSplash::class.java.simpleName
 
@@ -68,21 +69,36 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
     }
 
     /**
+     * 展示开屏广告
+     */
+    override fun show(viewGroup: ViewGroup) {
+        if (splashAd?.splashView != null) {
+            viewGroup.removeAllViews()
+
+            splashAd?.splashView?.let {
+                viewGroup.addView(it)
+            }
+        }
+    }
+
+    /**
      * 销毁广告对象
      */
     override fun destroy() {
-        super.destroy()
-
         splashAd?.setSplashInteractionListener(null)
         splashAd?.setDownloadListener(null)
 
         splashAd = null
+
+        mediaShowListener = null
+        mediaClickListener = null
+        mediaCloseListener = null
     }
 
-    fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+    fun requestSplash(mediaRequestParams: MediaRequestParams<ISplash>) {
         this.tacticsInfo = mediaRequestParams.tacticsInfo
 
-        val adNative = TTAdSdk.getAdManager().createAdNative(mediaRequestParams.activity)
+        val adNative = TTAdSdk.getAdManager().createAdNative(activity)
 
         val mediaLoadType = when (mediaRequestParams.slotParams.mediaLoadType) {
             MediaLoadType.LOAD -> {
@@ -159,20 +175,6 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
 
                 splashAd = ttSplashAd
 
-                mediaRequestParams.slotParams.splashShowViewGroup?.removeAllViews()
-
-                splashAd?.splashView?.let {
-                    mediaRequestParams.slotParams.splashShowViewGroup?.addView(it)
-                }
-
-                mediaResponseTime = SystemClock.elapsedRealtime()
-
-                mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
-
-                mediaRequestParams.mediaRequestResult.invoke(
-                    MediaRequestResult(this@CSJSplash)
-                )
-
                 splashAd?.setSplashInteractionListener(object : TTSplashAd.AdInteractionListener {
                     /**
                      * 开屏广告点击回调
@@ -224,6 +226,14 @@ class CSJSplash(context: Context) : MobViewWrapper(context) {
                         }
                     }
                 })
+
+                mediaResponseTime = SystemClock.elapsedRealtime()
+
+                mediaRequestParams.mediaPlatformLog.handleRequestSucceed()
+
+                mediaRequestParams.mediaRequestResult.invoke(
+                    MediaRequestResult(this@CSJSplash)
+                )
             }
         }
 

@@ -10,23 +10,21 @@ import com.media.mob.bean.request.SlotParams
 import com.media.mob.dispatch.MobRequestResult
 import com.media.mob.dispatch.loader.SplashLoader
 import com.media.mob.dispatch.loader.helper.MobMediaCacheHelper
-import com.media.mob.media.view.IMobView
-import com.media.mob.platform.IPlatform
 
 @SuppressLint("ViewConstructor")
-class MobSplash(val activity: Activity, private val positionConfig: PositionConfig) : IMobView(activity) {
+class MobSplash(val activity: Activity, private val positionConfig: PositionConfig) : ISplash {
 
     /**
      * 广告对象
      */
-    private var mobView: IMobView? = null
+    private var splash: ISplash? = null
 
     /**
      * 广告对象的平台名称
      */
     override val platformName: String
         get() {
-            return mobView?.platformName ?: ""
+            return splash?.platformName ?: ""
         }
 
     /**
@@ -34,7 +32,7 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
      */
     override val tacticsInfo: TacticsInfo?
         get() {
-            return mobView?.tacticsInfo
+            return splash?.tacticsInfo
         }
 
     /**
@@ -42,7 +40,7 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
      */
     override val mediaResponseTime: Long
         get() {
-            return mobView?.mediaResponseTime ?: -1L
+            return splash?.mediaResponseTime ?: -1L
         }
 
     /**
@@ -50,7 +48,7 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
      */
     override val showState: Boolean
         get() {
-            return mobView?.showState ?: false
+            return splash?.showState ?: false
         }
 
     /**
@@ -58,39 +56,68 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
      */
     override val clickState: Boolean
         get() {
-            return mobView?.clickState ?: false
+            return splash?.clickState ?: false
         }
+
+    /**
+     * 广告展示监听
+     */
+    override var mediaShowListener: (() -> Unit)? = null
+
+    /**
+     * 广告点击监听
+     */
+    override var mediaClickListener: (() -> Unit)? = null
+
+    /**
+     * 广告关闭监听
+     */
+    override var mediaCloseListener: (() -> Unit)? = null
+
+    /**
+     * 请求成功的监听
+     */
+    var requestSuccessListener: (() -> Unit)? = null
+
+    /**
+     * 请求失败的监听
+     */
+    var requestFailedListener: ((code: Int, message: String) -> Unit)? = null
 
     /**
      * 检查广告是否有效
      */
     override fun checkMediaValidity(): Boolean {
-        return mobView != null && mobView?.checkMediaValidity() == true
+        return splash != null && splash?.checkMediaValidity() == true
     }
 
     /**
      * 检查广告缓存时间
      */
     override fun checkMediaCacheTimeout(): Boolean {
-        return mobView != null && mobView?.checkMediaCacheTimeout() == true
+        return splash != null && splash?.checkMediaCacheTimeout() == true
+    }
+
+    override fun show(viewGroup: ViewGroup) {
+        if (splash != null) {
+            splash?.show(viewGroup)
+        }
     }
 
     /**
      * 销毁广告
      */
     override fun destroy() {
-        super.destroy()
-
-        if (mobView != null) {
-            if (mobView?.checkMediaValidity() == true) {
-                mobView?.let {
+        if (splash != null) {
+            if (splash?.checkMediaValidity() == true) {
+                splash?.let {
                     it.tacticsInfo?.let { tacticsInfo ->
                         MobMediaCacheHelper.insertSplashMobMediaCache(tacticsInfo, it)
                     }
                 }
             } else {
-                mobView?.destroy()
-                mobView = null
+                splash?.destroy()
+                splash = null
             }
         }
     }
@@ -103,33 +130,25 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
             activity,
             positionConfig,
             MediaRequestLog(positionConfig),
-            object : MobRequestResult<IMobView> {
+            object : MobRequestResult<ISplash> {
 
                 override fun requestFailed(code: Int, message: String) {
                     invokeRequestFailedListener(code, message)
                 }
 
-                override fun requestSucceed(result: IMobView) {
-                    mobView = result
+                override fun requestSucceed(result: ISplash) {
+                    splash = result
 
-                    mobView?.mediaShowListener = {
+                    splash?.mediaShowListener = {
                         invokeMediaShowListener()
                     }
 
-                    mobView?.mediaClickListener = {
+                    splash?.mediaClickListener = {
                         invokeMediaClickListener()
                     }
 
-                    mobView?.mediaCloseListener = {
+                    splash?.mediaCloseListener = {
                         invokeMediaCloseListener()
-                    }
-
-                    if (mobView?.platformName == IPlatform.PLATFORM_CSJ) {
-                        if (mobView?.parent != null && mobView?.parent is ViewGroup) {
-                            (mobView?.parent as ViewGroup).removeView(mobView)
-                        }
-
-                        addView(mobView)
                     }
 
                     invokeRequestSuccessListener()
@@ -151,5 +170,27 @@ class MobSplash(val activity: Activity, private val positionConfig: PositionConf
      */
     private fun invokeRequestFailedListener(code: Int, message: String) {
         requestFailedListener?.invoke(code, message)
+    }
+
+
+    /**
+     * 执行广告View展示监听
+     */
+    fun invokeMediaShowListener() {
+        mediaShowListener?.invoke()
+    }
+
+    /**
+     * 执行广告View点击监听
+     */
+    fun invokeMediaClickListener() {
+        mediaClickListener?.invoke()
+    }
+
+    /**
+     * 执行广告View关闭监听
+     */
+    fun invokeMediaCloseListener() {
+        mediaCloseListener?.invoke()
     }
 }

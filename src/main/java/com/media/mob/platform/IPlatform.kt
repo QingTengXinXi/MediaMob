@@ -4,7 +4,7 @@ import com.media.mob.bean.InitialParams
 import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.media.interstitial.IInterstitial
 import com.media.mob.media.rewardVideo.IRewardVideo
-import com.media.mob.media.view.IMobView
+import com.media.mob.media.view.splash.ISplash
 
 interface IPlatform {
     companion object {
@@ -28,7 +28,7 @@ interface IPlatform {
     /**
      * 请求开屏广告
      */
-    fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>)
+    fun requestSplash(mediaRequestParams: MediaRequestParams<ISplash>)
 
     /**
      * 请求激励视频广告

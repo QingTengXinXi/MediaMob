@@ -3,7 +3,7 @@ package com.media.mob.dispatch.loader.helper
 import com.media.mob.bean.TacticsInfo
 import com.media.mob.media.interstitial.IInterstitial
 import com.media.mob.media.rewardVideo.IRewardVideo
-import com.media.mob.media.view.IMobView
+import com.media.mob.media.view.splash.ISplash
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -12,8 +12,8 @@ object MobMediaCacheHelper {
     /**
      * 开屏广告全局缓存
      */
-    private val splashMobMediaCaches: ConcurrentHashMap<TacticsInfo, ConcurrentLinkedQueue<IMobView>> by lazy {
-        ConcurrentHashMap<TacticsInfo, ConcurrentLinkedQueue<IMobView>>()
+    private val SPLASH_SPLASH_MEDIA_CACHES: ConcurrentHashMap<TacticsInfo, ConcurrentLinkedQueue<ISplash>> by lazy {
+        ConcurrentHashMap<TacticsInfo, ConcurrentLinkedQueue<ISplash>>()
     }
 
     /**
@@ -34,8 +34,8 @@ object MobMediaCacheHelper {
     fun <T> checkMobMediaCommonCache(tacticsInfo: TacticsInfo, slotType: String): T? {
         return when (slotType) {
             "Splash" -> {
-                if (splashMobMediaCaches.containsKey(tacticsInfo)) {
-                    splashMobMediaCaches[tacticsInfo]?.poll() as? T
+                if (SPLASH_SPLASH_MEDIA_CACHES.containsKey(tacticsInfo)) {
+                    SPLASH_SPLASH_MEDIA_CACHES[tacticsInfo]?.poll() as? T
                 } else {
                     null
                 }
@@ -60,13 +60,13 @@ object MobMediaCacheHelper {
         }
     }
 
-    fun insertSplashMobMediaCache(tacticsInfo: TacticsInfo, value: IMobView) {
-        if (splashMobMediaCaches.containsKey(tacticsInfo)) {
-            splashMobMediaCaches[tacticsInfo]?.apply {
+    fun insertSplashMobMediaCache(tacticsInfo: TacticsInfo, value: ISplash) {
+        if (SPLASH_SPLASH_MEDIA_CACHES.containsKey(tacticsInfo)) {
+            SPLASH_SPLASH_MEDIA_CACHES[tacticsInfo]?.apply {
                 this.offer(value)
             }
         } else {
-            splashMobMediaCaches[tacticsInfo] = ConcurrentLinkedQueue<IMobView>().apply {
+            SPLASH_SPLASH_MEDIA_CACHES[tacticsInfo] = ConcurrentLinkedQueue<ISplash>().apply {
                 this.offer(value)
             }
         }

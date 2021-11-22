@@ -23,11 +23,6 @@ class SlotParams {
     var splashLimitClickArea: Boolean = false
 
     /**
-     * 开屏广告使用的ViewGroup
-     */
-    var splashShowViewGroup: ViewGroup? = null
-
-    /**
      * 插屏广告是否全屏展示（广点通插屏广告样式为弹窗和全屏的请求接口有区分）
      */
     var interstitialFullScreenShow: Boolean = false

@@ -1,10 +1,9 @@
-package com.media.mob.media.view
+package com.media.mob.media.view.splash
 
-import android.content.Context
 import com.media.mob.bean.TacticsInfo
 import com.media.mob.bean.log.MediaRequestLog
 
-abstract class MobViewWrapper(context: Context) : IMobView(context) {
+abstract class SplashViewWrapper : ISplash {
 
     /**
      * 展示状态
@@ -17,12 +16,39 @@ abstract class MobViewWrapper(context: Context) : IMobView(context) {
     override var clickState: Boolean = false
 
     /**
-     * 销毁广告
+     * 广告展示监听
      */
-    override fun destroy() {
-        mediaShowListener = null
-        mediaClickListener = null
-        mediaCloseListener = null
+    override var mediaShowListener: (() -> Unit)? = null
+
+    /**
+     * 广告点击监听
+     */
+    override var mediaClickListener: (() -> Unit)? = null
+
+    /**
+     * 广告关闭监听
+     */
+    override var mediaCloseListener: (() -> Unit)? = null
+
+    /**
+     * 执行广告View展示监听
+     */
+    fun invokeMediaShowListener() {
+        mediaShowListener?.invoke()
+    }
+
+    /**
+     * 执行广告View点击监听
+     */
+    fun invokeMediaClickListener() {
+        mediaClickListener?.invoke()
+    }
+
+    /**
+     * 执行广告View关闭监听
+     */
+    fun invokeMediaCloseListener() {
+        mediaCloseListener?.invoke()
     }
 
     /**

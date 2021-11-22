@@ -3,6 +3,7 @@ package com.media.mob.platform.baiQingTeng
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.SystemClock
+import android.view.ViewGroup
 import com.baidu.mobads.sdk.api.RequestParameters
 import com.baidu.mobads.sdk.api.SplashAd
 import com.baidu.mobads.sdk.api.SplashInteractionListener
@@ -12,12 +13,12 @@ import com.media.mob.bean.request.MediaRequestParams
 import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.lifecycle.ActivityLifecycle
 import com.media.mob.helper.logger.MobLogger
-import com.media.mob.media.view.IMobView
-import com.media.mob.media.view.MobViewWrapper
+import com.media.mob.media.view.splash.ISplash
+import com.media.mob.media.view.splash.SplashViewWrapper
 import com.media.mob.platform.IPlatform
 
 @SuppressLint("ViewConstructor")
-class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
+class BQTSplash(private val activity: Activity) : SplashViewWrapper() {
 
     private val classTarget = BQTSplash::class.java.simpleName
 
@@ -85,18 +86,29 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
     }
 
     /**
+     * 展示开屏广告
+     */
+    override fun show(viewGroup: ViewGroup) {
+        if (splashAd != null) {
+            splashAd?.show(viewGroup)
+        }
+    }
+
+    /**
      * 销毁广告对象
      */
     override fun destroy() {
-        super.destroy()
-
         activityLifecycle?.unregisterActivityLifecycle(activity)
 
         splashAd?.destroy()
         splashAd = null
+
+        mediaShowListener = null
+        mediaClickListener = null
+        mediaCloseListener = null
     }
 
-    fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+    fun requestSplash(mediaRequestParams: MediaRequestParams<ISplash>) {
         activityLifecycle = object : ActivityLifecycle(activity) {
             override fun activityResumed() {
                 super.activityResumed()
@@ -154,7 +166,7 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
             parameters.addExtra(SplashAd.KEY_POPDIALOG_DOWNLOAD, "false")
         }
 
-        splashAd = SplashAd(mediaRequestParams.activity, mediaRequestParams.tacticsInfo.thirdSlotId,
+        splashAd = SplashAd(activity, mediaRequestParams.tacticsInfo.thirdSlotId,
             parameters.build(), object : SplashInteractionListener {
 
                 /**
@@ -296,6 +308,6 @@ class BQTSplash(private val activity: Activity) : MobViewWrapper(activity) {
 
         mediaRequestParams.mediaPlatformLog.insertRequestTime()
 
-        splashAd?.loadAndShow(mediaRequestParams.slotParams.splashShowViewGroup)
+        splashAd?.load()
     }
 }

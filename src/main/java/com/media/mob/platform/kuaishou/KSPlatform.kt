@@ -9,7 +9,7 @@ import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
 import com.media.mob.media.interstitial.IInterstitial
 import com.media.mob.media.rewardVideo.IRewardVideo
-import com.media.mob.media.view.IMobView
+import com.media.mob.media.view.splash.ISplash
 import com.media.mob.platform.IPlatform
 
 class KSPlatform(private val id: String) : IPlatform {
@@ -38,7 +38,7 @@ class KSPlatform(private val id: String) : IPlatform {
     /**
      * 请求开屏广告
      */
-    override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+    override fun requestSplash(mediaRequestParams: MediaRequestParams<ISplash>) {
         if (initialSucceed) {
             KSSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
         } else {

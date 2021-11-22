@@ -7,7 +7,7 @@ import com.media.mob.bean.request.MediaRequestResult
 import com.media.mob.helper.logger.MobLogger
 import com.media.mob.media.interstitial.IInterstitial
 import com.media.mob.media.rewardVideo.IRewardVideo
-import com.media.mob.media.view.IMobView
+import com.media.mob.media.view.splash.ISplash
 import com.media.mob.platform.IPlatform
 import com.qq.e.comm.managers.GDTADManager
 
@@ -30,7 +30,7 @@ class YLHPlatform(private val id: String) : IPlatform {
     /**
      * 请求开屏广告
      */
-    override fun requestSplash(mediaRequestParams: MediaRequestParams<IMobView>) {
+    override fun requestSplash(mediaRequestParams: MediaRequestParams<ISplash>) {
         if (initialSucceed) {
             YLHSplash(mediaRequestParams.activity).requestSplash(mediaRequestParams)
         } else {
